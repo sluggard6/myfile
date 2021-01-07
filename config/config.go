@@ -5,4 +5,6 @@ type Config struct {
 	port int
 }
 
-const Version = "0.0.1"
+func New(config string) Config {
+	return Config{"127.0.0.1", 5678}
+}

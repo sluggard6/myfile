@@ -6,11 +6,13 @@ import (
 	"os"
 
 	"github.com/sluggard/myfile/application"
+	"github.com/sluggard/myfile/config"
 )
 
-var config = flag.String("c", "", "配置路径")
-var version = flag.Bool("version", false, "打印版本号")
+var configFile = flag.String("c", "", "配置路径")
+var version = flag.Bool("v", false, "打印版本号")
 var Version = "0.0.1"
+var c = config.New("")
 
 func main() {
 	flag.Usage = func() {
@@ -19,7 +21,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "\n")
 		fmt.Fprintf(os.Stderr, "  -c <path>\n")
 		fmt.Fprintf(os.Stderr, "    设置项目配置文件路径，可选\n")
-		fmt.Fprintf(os.Stderr, "  -version <true or false> 打印项目版本号，默认为: false\n")
+		fmt.Fprintf(os.Stderr, "  -v 打印项目版本号，默认为: false\n")
 		fmt.Fprintf(os.Stderr, "    打印版本号\n")
 		fmt.Fprintf(os.Stderr, "\n")
 	}
