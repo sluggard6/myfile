@@ -2,9 +2,11 @@ package application
 
 import (
 	stdContext "context"
+	"fmt"
 	"time"
 
 	"github.com/kataras/iris/v12"
+	"github.com/sluggard/myfile/config"
 	// "github.com/snowlyg/blog/application/controllers"
 	// "github.com/snowlyg/blog/application/libs"
 	// "github.com/snowlyg/blog/application/libs/easygorm"
@@ -15,13 +17,13 @@ import (
 
 // HttpServer
 type HttpServer struct {
-	ConfigPath string
-	App        *iris.Application
-	Models     []interface{}
-	Status     bool
+	Config config.Config
+	App    *iris.Application
+	Models []interface{}
+	Status bool
 }
 
-func NewServer(config string) *HttpServer {
+func NewServer(config config.Config) *HttpServer {
 	app := iris.New()
 	// app.Logger().SetLevel(libs.Config.LogLevel)
 	// iris.RegisterOnInterrupt(func() {
@@ -29,9 +31,9 @@ func NewServer(config string) *HttpServer {
 	// sql.Close()
 	// })
 	httpServer := &HttpServer{
-		ConfigPath: config,
-		App:        app,
-		Status:     false,
+		Config: config,
+		App:    app,
+		Status: false,
 	}
 	httpServer._Init()
 	return httpServer
@@ -41,10 +43,10 @@ func NewServer(config string) *HttpServer {
 func (s *HttpServer) Start() error {
 	if err := s.App.Run(
 		// iris.Addr(fmt.Sprintf("%s:%d", libs.Config.Host, libs.Config.Port)),
-		// iris.WithoutServerError(iris.ErrServerClosed),
-		// iris.WithOptimizations,
-		// iris.WithTimeFormat(time.RFC3339),
-		iris.Addr("0.0.0.0:8087"),
+		iris.Addr(fmt.Sprintf("%s:%d", s.Config.Server.Host, s.Config.Server.Port)),
+		iris.WithoutServerError(iris.ErrServerClosed),
+		iris.WithOptimizations,
+		iris.WithTimeFormat(time.RFC3339),
 	); err != nil {
 		return err
 	}
@@ -77,7 +79,7 @@ func (s *HttpServer) _Init() error {
 	// 	logging.ErrorLogger.Errorf("数据库初始化失败:", err)
 	// 	return err
 	// }
-	// s.RouteInit()
+	s.RouteInit()
 	return nil
 }
 

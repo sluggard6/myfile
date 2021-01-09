@@ -9,10 +9,9 @@ import (
 	"github.com/sluggard/myfile/config"
 )
 
-var configFile = flag.String("c", "", "配置路径")
+var configFile = flag.String("c", config.DefaultConfigPath, "配置路径")
 var version = flag.Bool("v", false, "打印版本号")
 var Version = "0.0.1"
-var c = config.New("")
 
 func main() {
 	flag.Usage = func() {
@@ -32,7 +31,7 @@ func main() {
 		return
 	}
 
-	irisServer := application.NewServer(*config)
+	irisServer := application.NewServer(config.LoadConfing(*configFile))
 	if irisServer == nil {
 		panic("http server 初始化失败")
 	}
