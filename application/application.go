@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"github.com/kataras/iris/v12"
+	"github.com/kataras/iris/v12/mvc"
+	"github.com/sluggard/myfile/application/controller"
 	"github.com/sluggard/myfile/config"
 	// "github.com/snowlyg/blog/application/controllers"
 	// "github.com/snowlyg/blog/application/libs"
@@ -83,8 +85,34 @@ func (s *HttpServer) _Init() error {
 	return nil
 }
 
+func myAuthMiddlewareHandler(ctx iris.Context) {
+	fmt.Println("--------1111----------")
+	ctx.WriteString("Authentication failed")
+}
+
+func ping(ctx iris.Context) {
+	fmt.Println("--------2222----------")
+	ctx.WriteString("pong")
+}
+
+func help(ctx iris.Context) {
+	fmt.Println("----------3333----------")
+	ctx.WriteString("coming")
+}
+
+// func testMvc(app *mvc.Application) {
+// 	app.Handle(new(controllers.TestController))
+// }
+
 // RouteInit
 func (s *HttpServer) RouteInit() {
+	app := s.App.Party("/").AllowMethods(iris.MethodOptions)
+	mvc.New(app.Party("/test")).Handle(new(controller.TestController))
+	// test.Handle(new(TestController))
+	// test.Get("/ping", controller.GetPing)
+	// test.Get("/help", help)
+	// mvc.Configure(test, )
+
 	// s.App.UseRouter(middleware.CrsAuth())
 	// app := s.App.Party("/").AllowMethods(iris.MethodOptions)
 	// {
