@@ -85,21 +85,6 @@ func (s *HttpServer) _Init() error {
 	return nil
 }
 
-func myAuthMiddlewareHandler(ctx iris.Context) {
-	fmt.Println("--------1111----------")
-	ctx.WriteString("Authentication failed")
-}
-
-func ping(ctx iris.Context) {
-	fmt.Println("--------2222----------")
-	ctx.WriteString("pong")
-}
-
-func help(ctx iris.Context) {
-	fmt.Println("----------3333----------")
-	ctx.WriteString("coming")
-}
-
 // func testMvc(app *mvc.Application) {
 // 	app.Handle(new(controllers.TestController))
 // }
@@ -108,6 +93,7 @@ func help(ctx iris.Context) {
 func (s *HttpServer) RouteInit() {
 	app := s.App.Party("/").AllowMethods(iris.MethodOptions)
 	mvc.New(app.Party("/test")).Handle(new(controller.TestController))
+	mvc.New(app.Party("/admin")).Handle(new(controller.AdminController))
 	// test.Handle(new(TestController))
 	// test.Get("/ping", controller.GetPing)
 	// test.Get("/help", help)
