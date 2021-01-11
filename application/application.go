@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/kataras/iris/sessions"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/mvc"
 	"github.com/sluggard/myfile/application/controller"
@@ -25,8 +26,15 @@ type HttpServer struct {
 	Status bool
 }
 
+var (
+	gSessionId = "GSESSIONID"
+	sess       = sessions.New(sessions.Config{Cookie: gSessionId})
+)
+
 func NewServer(config config.Config) *HttpServer {
 	app := iris.New()
+	// app.UseRouter(recover.New())
+	// app.Use(AuthRequired())
 	// app.Logger().SetLevel(libs.Config.LogLevel)
 	// iris.RegisterOnInterrupt(func() {
 	// sql, _ := easygorm.GetEasyGormDb().DB()
@@ -85,13 +93,18 @@ func (s *HttpServer) _Init() error {
 	return nil
 }
 
-// func testMvc(app *mvc.Application) {
-// 	app.Handle(new(controllers.TestController))
-// }
+func AuthRequired(ctx iris.Context) {
+	if auth, _ := sess.Start(ctx).GetBoolean("authenticated"); !auth {
+		ctx.StatusCode(iris.StatusForbidden)
+		return
+	} else {
+		ctx.Next()
+	}
+}
 
 // RouteInit
 func (s *HttpServer) RouteInit() {
-	app := s.App.Party("/").AllowMethods(iris.MethodOptions)
+	app := s.App.Party("/").AllowMethods(iris.MethodOptions).Handle(AuthRequired())
 	mvc.New(app.Party("/test")).Handle(new(controller.TestController))
 	mvc.New(app.Party("/admin")).Handle(new(controller.AdminController))
 	// test.Handle(new(TestController))
