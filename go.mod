@@ -10,5 +10,6 @@ require (
 	github.com/kataras/iris v0.0.2
 	github.com/kataras/iris/v12 v12.2.0-alpha2.0.20210110101619-f4989bd5aaac
 	github.com/sirupsen/logrus v1.7.0
-	gorm.io/gorm v1.20.11 // indirect
+	gorm.io/driver/sqlite v1.1.4
+	gorm.io/gorm v1.20.11
 )

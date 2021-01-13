@@ -2,17 +2,28 @@ package db
 
 import (
 	"time"
+
+	log "github.com/sirupsen/logrus"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 func init() {
-	sqlDB, err := db.DB()
-
+	db, err := gorm.Open(sqlite.Open("myfile.db"), &gorm.Config{})
+	if err != nil {
+		log.Error(err)
+	}
+	SqlDB, err := db.DB()
+	if err != nil {
+		log.Error(err)
+	}
 	// SetMaxIdleConns sets the maximum number of connections in the idle connection pool.
-	sqlDB.SetMaxIdleConns(10)
+	SqlDB.SetMaxIdleConns(10)
 
 	// SetMaxOpenConns sets the maximum number of open connections to the database.
-	sqlDB.SetMaxOpenConns(100)
+	SqlDB.SetMaxOpenConns(100)
 
 	// SetConnMaxLifetime sets the maximum amount of time a connection may be reused.
-	sqlDB.SetConnMaxLifetime(time.Hour)
+	SqlDB.SetConnMaxLifetime(time.Hour)
+
 }
