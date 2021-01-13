@@ -10,8 +10,8 @@ type AdminController struct {
 }
 
 type LoginForm struct {
-	username string
-	password string
+	username string `json:"username" validate:"required"`
+	password string `json:"password" validate:"required"`
 }
 
 func (c *AdminController) PostLogin(ctx iris.Context) HttpResult {

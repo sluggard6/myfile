@@ -17,4 +17,6 @@
 .DS_Store
 
 myfile
+
+.vscode
 workspace.code-workspace
