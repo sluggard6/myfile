@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"github.com/sluggard/myfile/application"
 	"github.com/sluggard/myfile/config"
 )
@@ -14,6 +16,7 @@ var version = flag.Bool("v", false, "打印版本号")
 var Version = "0.0.1"
 
 func main() {
+	log.SetLevel(logrus.TraceLevel)
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "usage: %s [options] [command]\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "Commands:\n")

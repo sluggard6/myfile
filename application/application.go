@@ -8,6 +8,7 @@ import (
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/mvc"
 	"github.com/kataras/iris/v12/sessions"
+	log "github.com/sirupsen/logrus"
 	"github.com/sluggard/myfile/application/controller"
 	"github.com/sluggard/myfile/config"
 	// "github.com/snowlyg/blog/application/controllers"
@@ -29,7 +30,10 @@ type HttpServer struct {
 var (
 	gSessionId    = "GSESSIONID"
 	sess          = sessions.New(sessions.Config{Cookie: gSessionId})
-	ignoreAuthUrl = []string{"/test/ping"}
+	ignoreAuthUrl = []string{
+		"/test/ping",
+		"/admin/login",
+	}
 )
 
 func NewServer(config config.Config) *HttpServer {
@@ -95,6 +99,7 @@ func (s *HttpServer) _Init() error {
 }
 
 func AuthRequired(ctx iris.Context) {
+	log.Debug(ctx.Request().RequestURI)
 	//被忽略的url直接通过
 	for _, v := range ignoreAuthUrl {
 		if v == ctx.RequestPath(false) {
@@ -115,6 +120,7 @@ func (s *HttpServer) RouteInit() {
 	app := s.App
 	app.Use(AuthRequired)
 	app.Party("/").AllowMethods(iris.MethodOptions)
+	// .Handle(AuthRequired())
 	mvc.New(app.Party("/test")).Handle(new(controller.TestController))
 	mvc.New(app.Party("/admin")).Handle(new(controller.AdminController))
 	// test.Handle(new(TestController))
