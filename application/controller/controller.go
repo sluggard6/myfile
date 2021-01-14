@@ -12,15 +12,17 @@ type HttpResult struct {
 type MessageCode int
 
 const (
-	SUCCESS     MessageCode = 0
-	FAILED      MessageCode = 1
-	PARAM_ERROR MessageCode = 2
+	SUCCESS      MessageCode = 0
+	FAILED       MessageCode = 1
+	PARAM_ERROR  MessageCode = 2
+	LOGIN_FAILED MessageCode = 101
 )
 
 var failedMessage map[MessageCode]string = map[MessageCode]string{
-	SUCCESS:     "success",
-	FAILED:      "failed",
-	PARAM_ERROR: "param error",
+	SUCCESS:      "success",
+	FAILED:       "failed",
+	PARAM_ERROR:  "param error",
+	LOGIN_FAILED: "LOGIN_FAILED",
 }
 
 func Success(data Data) HttpResult {

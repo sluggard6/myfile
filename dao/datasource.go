@@ -1,4 +1,4 @@
-package db
+package dao
 
 import (
 	"time"
@@ -8,22 +8,24 @@ import (
 	"gorm.io/gorm"
 )
 
+var sqlDb gorm.DB
+
 func init() {
 	db, err := gorm.Open(sqlite.Open("myfile.db"), &gorm.Config{})
 	if err != nil {
 		log.Error(err)
 	}
-	SqlDB, err := db.DB()
+	sqlDb, err := db.DB()
 	if err != nil {
 		log.Error(err)
 	}
 	// SetMaxIdleConns sets the maximum number of connections in the idle connection pool.
-	SqlDB.SetMaxIdleConns(10)
+	sqlDb.SetMaxIdleConns(2)
 
 	// SetMaxOpenConns sets the maximum number of open connections to the database.
-	SqlDB.SetMaxOpenConns(100)
+	sqlDb.SetMaxOpenConns(100)
 
 	// SetConnMaxLifetime sets the maximum amount of time a connection may be reused.
-	SqlDB.SetConnMaxLifetime(time.Hour)
+	sqlDb.SetConnMaxLifetime(time.Hour)
 
 }

@@ -1,0 +1,38 @@
+package controller
+
+import (
+	"unsafe"
+
+	"github.com/kataras/iris/v12"
+	log "github.com/sirupsen/logrus"
+	"github.com/sluggard/myfile/model"
+	"github.com/sluggard/myfile/service"
+)
+
+type UserController struct {
+	userService service.UserService
+}
+
+type LoginForm struct {
+	Username string `json:username`
+	Password string `json:password`
+}
+
+func (c *UserController) PostLogin(ctx iris.Context) HttpResult {
+	loginForm := &LoginForm{}
+	if err := ctx.ReadJSON(&loginForm); err != nil {
+		ctx.StatusCode(iris.StatusBadRequest)
+		return FailedCode(PARAM_ERROR)
+	}
+	log.Debug(loginForm)
+	log.Debugf("loginForm.username is %s,loginForm.password is %s", loginForm.Username, loginForm.Password)
+	if user, err := c.userService.Login(model.User{Username: loginForm.Username, Password: loginForm.Password}); err != nil {
+		return FailedCode(LOGIN_FAILED)
+	} else {
+		return Success(user)
+	}
+}
+
+func String(b []byte) string {
+	return *(*string)(unsafe.Pointer(&b))
+}

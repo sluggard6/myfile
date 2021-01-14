@@ -4,9 +4,9 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-type Admin struct {
+type User struct {
 	gorm.Model
-	Name     string
+	Username string
 	Email    *string
 	Password string
 }
