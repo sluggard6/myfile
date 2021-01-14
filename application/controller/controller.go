@@ -36,3 +36,7 @@ func Failed() HttpResult {
 func FailedCode(code MessageCode) HttpResult {
 	return HttpResult{code, failedMessage[code], nil}
 }
+
+func FailedCodeMessage(code MessageCode, message string) HttpResult {
+	return HttpResult{Code: code, Message: message, Data: nil}
+}

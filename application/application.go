@@ -11,7 +11,6 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/sluggard/myfile/application/controller"
 	"github.com/sluggard/myfile/config"
-	"github.com/sluggard/myfile/service"
 	// "github.com/snowlyg/blog/application/controllers"
 	// "github.com/snowlyg/blog/application/libs"
 	// "github.com/snowlyg/blog/application/libs/easygorm"
@@ -123,7 +122,7 @@ func (s *HttpServer) RouteInit() {
 	app.Party("/").AllowMethods(iris.MethodOptions)
 	// .Handle(AuthRequired())
 	mvc.New(app.Party("/test")).Handle(new(controller.TestController))
-	mvc.New(app.Party("/admin")).Handle(new(controller.UserController{service.NewUserService()}))
+	mvc.New(app.Party("/admin")).Handle(controller.NewUserController())
 	// test.Handle(new(TestController))
 	// test.Get("/ping", controller.GetPing)
 	// test.Get("/help", help)

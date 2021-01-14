@@ -1,4 +1,4 @@
-package dao
+package model
 
 import (
 	"time"
@@ -8,9 +8,9 @@ import (
 	"gorm.io/gorm"
 )
 
-var sqlDb gorm.DB
+var DB *gorm.DB
 
-func init() {
+func Init() {
 	db, err := gorm.Open(sqlite.Open("myfile.db"), &gorm.Config{})
 	if err != nil {
 		log.Error(err)
@@ -28,4 +28,5 @@ func init() {
 	// SetConnMaxLifetime sets the maximum amount of time a connection may be reused.
 	sqlDb.SetConnMaxLifetime(time.Hour)
 
+	DB = db
 }
