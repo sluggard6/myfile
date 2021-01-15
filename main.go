@@ -35,6 +35,7 @@ func main() {
 	}
 
 	irisServer := application.NewServer(config.LoadConfing(*configFile))
+	log.Info(config.GetConfig())
 	if irisServer == nil {
 		panic("http server 初始化失败")
 	}

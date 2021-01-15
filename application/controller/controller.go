@@ -22,7 +22,7 @@ var failedMessage map[MessageCode]string = map[MessageCode]string{
 	SUCCESS:      "success",
 	FAILED:       "failed",
 	PARAM_ERROR:  "param error",
-	LOGIN_FAILED: "LOGIN_FAILED",
+	LOGIN_FAILED: "login_failed",
 }
 
 func Success(data Data) HttpResult {

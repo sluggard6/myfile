@@ -7,8 +7,8 @@ import (
 )
 
 type Config struct {
-	Server Server
-	Db     Db
+	Server   Server
+	Database Database
 }
 
 type Server struct {
@@ -16,8 +16,8 @@ type Server struct {
 	Port int
 }
 
-type Db struct {
-	DbType   string
+type Database struct {
+	Type     string
 	Url      string
 	Username string
 	Password string
@@ -34,13 +34,18 @@ const (
 	Json              fileType = "json"
 )
 
+var config Config
+
+func GetConfig() *Config {
+	return &config
+}
+
 func New(config string) Config {
 	// return Config{"127.0.0.1", 5678}
 	return LoadConfing(DefaultConfigPath)
 }
 
 func LoadConfing(path string) Config {
-	var config Config
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		fmt.Println("unable to decode into struct, %v", err)

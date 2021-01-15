@@ -1,10 +1,9 @@
 package controller
 
 import (
-	"unsafe"
-
 	"github.com/kataras/iris/v12"
 	log "github.com/sirupsen/logrus"
+	"github.com/sluggard/myfile/model"
 	"github.com/sluggard/myfile/service"
 )
 
@@ -37,6 +36,17 @@ func (c *UserController) PostLogin(ctx iris.Context) HttpResult {
 	}
 }
 
-func String(b []byte) string {
-	return *(*string)(unsafe.Pointer(&b))
+func (c *UserController) PostRegister(ctx iris.Context) HttpResult {
+	user := &model.User{}
+	if err := ctx.ReadJSON(user); err != nil {
+		return FailedCode(PARAM_ERROR)
+	}
+	if err := c.userService.Register(user); err != nil {
+		return FailedCodeMessage(LOGIN_FAILED, err.Error())
+	}
+	return Success(user)
+}
+
+func (c *UserController) GetTest(ctx iris.Context) HttpResult {
+	return Success("test success")
 }

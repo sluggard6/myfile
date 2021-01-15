@@ -11,6 +11,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/sluggard/myfile/application/controller"
 	"github.com/sluggard/myfile/config"
+	"github.com/sluggard/myfile/model"
 	// "github.com/snowlyg/blog/application/controllers"
 	// "github.com/snowlyg/blog/application/libs"
 	// "github.com/snowlyg/blog/application/libs/easygorm"
@@ -32,7 +33,8 @@ var (
 	sess          = sessions.New(sessions.Config{Cookie: gSessionId})
 	ignoreAuthUrl = []string{
 		"/test/ping",
-		"/admin/login",
+		"/user/login",
+		"/user/register",
 	}
 )
 
@@ -89,11 +91,10 @@ func (s *HttpServer) _Init() error {
 	// if libs.Config.Cache.Driver == "redis" {
 	// 	cache.InitRedisCluster(libs.GetRedisUris(), libs.Config.Redis.Password)
 	// }
-	// err = easygorm.Init(libs.GetGormConfig())
-	// if err != nil {
-	// 	logging.ErrorLogger.Errorf("数据库初始化失败:", err)
-	// 	return err
-	// }
+	if err := model.Init(); err != nil {
+		log.Error(err.Error())
+		return err
+	}
 	s.RouteInit()
 	return nil
 }
@@ -122,7 +123,7 @@ func (s *HttpServer) RouteInit() {
 	app.Party("/").AllowMethods(iris.MethodOptions)
 	// .Handle(AuthRequired())
 	mvc.New(app.Party("/test")).Handle(new(controller.TestController))
-	mvc.New(app.Party("/admin")).Handle(controller.NewUserController())
+	mvc.New(app.Party("/user")).Handle(controller.NewUserController())
 	// test.Handle(new(TestController))
 	// test.Get("/ping", controller.GetPing)
 	// test.Get("/help", help)
