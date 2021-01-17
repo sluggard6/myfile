@@ -2,8 +2,9 @@ package util
 
 import (
 	"bytes"
+	"crypto/md5"
 	"crypto/sha256"
-	"encoding/base64"
+	"fmt"
 	"strings"
 	"unsafe"
 
@@ -12,7 +13,7 @@ import (
 
 func ShaString(s string) string {
 	hash := sha256.Sum256([]byte(s))
-	return base64.StdEncoding.EncodeToString(hash[:])
+	return fmt.Sprintf("%x", hash[:])
 	// h := sha256.New()
 	// h.Write([]byte(s))
 	// return ""
@@ -35,4 +36,7 @@ func ByteArrayToString(b []byte) string {
 
 func isBlankString(s string) bool {
 	return strings.Trim(s, " ") == ""
+}
+func Md5String(s string) string {
+	return fmt.Sprintf("%x", md5.Sum([]byte(s)))
 }

@@ -17,7 +17,7 @@ type Server struct {
 }
 
 type Database struct {
-	Type     string
+	Type     dbType
 	Url      string
 	Username string
 	Password string

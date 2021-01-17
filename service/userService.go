@@ -47,5 +47,5 @@ func checkPassword(user *model.User, password string) bool {
 }
 
 func buildPassword(password string, salt string) string {
-	return util.ShaString(password + salt)
+	return util.Md5String(password + salt)
 }

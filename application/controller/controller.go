@@ -1,5 +1,7 @@
 package controller
 
+import "github.com/go-playground/validator/v10"
+
 type Data interface {
 }
 
@@ -17,6 +19,8 @@ const (
 	PARAM_ERROR  MessageCode = 2
 	LOGIN_FAILED MessageCode = 101
 )
+
+var validate *validator.Validate = validator.New()
 
 var failedMessage map[MessageCode]string = map[MessageCode]string{
 	SUCCESS:      "success",
