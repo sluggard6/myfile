@@ -3,6 +3,8 @@ package util
 import (
 	"bytes"
 	"crypto/sha256"
+	"encoding/base64"
+	"strings"
 	"unsafe"
 
 	"github.com/google/uuid"
@@ -10,7 +12,7 @@ import (
 
 func ShaString(s string) string {
 	hash := sha256.Sum256([]byte(s))
-	return ByteArrayToString(hash[:])
+	return base64.StdEncoding.EncodeToString(hash[:])
 	// h := sha256.New()
 	// h.Write([]byte(s))
 	// return ""
@@ -29,4 +31,8 @@ func UUID() string {
 }
 func ByteArrayToString(b []byte) string {
 	return *(*string)(unsafe.Pointer(&b))
+}
+
+func isBlankString(s string) bool {
+	return strings.Trim(s, " ") == ""
 }
