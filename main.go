@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	// _ "./docs"
 	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 	"github.com/sluggard/myfile/application"

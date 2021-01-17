@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/iris-contrib/middleware/cors"
+	"github.com/iris-contrib/swagger/v12"
+	"github.com/iris-contrib/swagger/v12/swaggerFiles"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/mvc"
 	"github.com/kataras/iris/v12/sessions"
@@ -38,8 +41,14 @@ var (
 	}
 )
 
+func initSwagger(app *iris.Application) {
+	url := swagger.URL("http://localhost:5678/swagger/doc.json") //The url pointing to API definition
+	app.Get("/swagger/{any:path}", swagger.WrapHandler(swaggerFiles.Handler, url))
+}
+
 func NewServer(config config.Config) *HttpServer {
 	app := iris.New()
+	initSwagger(app)
 	// app.UseRouter(recover.New())
 	// app.Use(AuthRequired())
 	// app.Logger().SetLevel(libs.Config.LogLevel)
@@ -119,8 +128,12 @@ func AuthRequired(ctx iris.Context) {
 func (s *HttpServer) RouteInit() {
 
 	app := s.App
+	crs := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"}, // allows everything, use that to change the hosts.
+		AllowCredentials: true,
+	})
 	app.Use(AuthRequired)
-	app.Party("/").AllowMethods(iris.MethodOptions)
+	app.Party("/", crs).AllowMethods(iris.MethodOptions)
 	// .Handle(AuthRequired())
 	mvc.New(app.Party("/test")).Handle(new(controller.TestController))
 	mvc.New(app.Party("/user")).Handle(controller.NewUserController())
