@@ -10,6 +10,7 @@ import (
 type UserService interface {
 	Login(username string, password string) (*model.User, string)
 	Register(user *model.User) error
+	GetById(id int) (*model.User, error)
 }
 
 func NewUserService() UserService {
@@ -41,6 +42,15 @@ func (s *userService) Register(user *model.User) error {
 	user.Password = buildPassword(user.Password, user.Salt)
 	model.DB.Create(user)
 	return nil
+}
+func (s *userService) GetById(id int) (*model.User, error) {
+	// user := &model.User{}
+	return model.GetUserById(id)
+	// if user, err = model.DB.Where("id=?", id).Find(user); user.ID > 0 {
+	// 	return user, nil
+	// } else {
+	// 	return nil, err
+	// }
 }
 func checkPassword(user *model.User, password string) bool {
 	return buildPassword(password, user.Salt) == user.Password

@@ -5,7 +5,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/kataras/iris/v12"
-	log "github.com/sirupsen/logrus"
+	"github.com/kataras/iris/v12/sessions"
 	"github.com/sluggard/myfile/model"
 	"github.com/sluggard/myfile/service"
 )
@@ -24,22 +24,35 @@ type LoginForm struct {
 	Password string `json:"password" validate:"required"`
 }
 
+type LoginInfo struct {
+	User  *model.User `json:"user"`
+	Token string      `json:"token"`
+}
+
 func (c *UserController) PostLogin(ctx iris.Context) HttpResult {
 	loginForm := &LoginForm{}
 	if err := ctx.ReadJSON(loginForm); err != nil {
 		ctx.StatusCode(iris.StatusBadRequest)
 		return FailedCode(PARAM_ERROR)
 	}
-	log.Debug(loginForm)
-	log.Debugf("loginForm.username is %s,loginForm.password is %s", loginForm.Username, loginForm.Password)
 	if user, message := c.userService.Login(loginForm.Username, loginForm.Password); user == nil {
 		return FailedCodeMessage(LOGIN_FAILED, message)
 	} else {
-
-		return Success(user)
+		session := sessions.Get(ctx)
+		session.Set("authenticated", true)
+		return Success(&LoginInfo{User: user, Token: session.ID()})
 	}
 }
 
+func (c *UserController) GetBy(id int) HttpResult {
+	if user, err := c.userService.GetById(id); err != nil {
+		return Failed()
+	} else {
+		user.Password = ""
+		return Success(user)
+	}
+
+}
 func (c *UserController) PostRegister(ctx iris.Context) HttpResult {
 	user := &model.User{}
 	if err := ctx.ReadJSON(user); err != nil {

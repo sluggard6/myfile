@@ -5,13 +5,10 @@ import (
 	"github.com/kataras/iris/v12"
 )
 
-type Data interface {
-}
-
 type HttpResult struct {
-	Code    MessageCode
-	Message string
-	Data    Data
+	Code    MessageCode `json:"code"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data"`
 }
 
 type MessageCode int
@@ -32,12 +29,12 @@ var failedMessage map[MessageCode]string = map[MessageCode]string{
 	LOGIN_FAILED: "login_failed",
 }
 
-func Success(data Data) HttpResult {
-	return HttpResult{0, "success", data}
+func Success(data interface{}) HttpResult {
+	return HttpResult{SUCCESS, "success", data}
 }
 
 func Failed() HttpResult {
-	return HttpResult{-1, "failed", nil}
+	return HttpResult{FAILED, "failed", nil}
 }
 
 func FailedCode(code MessageCode) HttpResult {
@@ -49,7 +46,8 @@ func FailedCodeMessage(code MessageCode, message string) HttpResult {
 }
 
 func Cors(ctx iris.Context) {
-	ctx.Header("Access-Control-Allow-Origin", "*")
+	ctx.Header("Access-Control-Allow-Origin", "http://localhost:9527")
+	ctx.Header("Access-Control-Allow-Credentials", "true")
 	if ctx.Request().Method == "OPTIONS" {
 		ctx.Header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,PATCH,OPTIONS")
 		ctx.Header("Access-Control-Allow-Headers", "Content-Type, Accept, Authorization")

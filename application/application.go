@@ -135,7 +135,7 @@ func (s *HttpServer) RouteInit() {
 	app.Options("/*", controller.Cors)
 	// app.Party("/*", controller.Cors).AllowMethods(iris.MethodOptions)
 	app.UseGlobal(controller.Cors)
-	app.Use(AuthRequired)
+	app.Use(AuthRequired, sess.Handler())
 	mvc.New(app.Party("/test")).Handle(new(controller.TestController))
 	mvc.New(app.Party("/user")).Handle(controller.NewUserController())
 	// log.Info(app.Macros().Lookup())
