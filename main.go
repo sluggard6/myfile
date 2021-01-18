@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"os"
 
-	// _ "./docs"
 	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 	"github.com/sluggard/myfile/application"
 	"github.com/sluggard/myfile/config"
+	_ "github.com/sluggard/myfile/docs"
 )
 
 var configFile = flag.String("c", config.DefaultConfigPath, "配置路径")

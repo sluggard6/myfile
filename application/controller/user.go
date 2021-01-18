@@ -35,6 +35,7 @@ func (c *UserController) PostLogin(ctx iris.Context) HttpResult {
 	if user, message := c.userService.Login(loginForm.Username, loginForm.Password); user == nil {
 		return FailedCodeMessage(LOGIN_FAILED, message)
 	} else {
+
 		return Success(user)
 	}
 }

@@ -16,7 +16,7 @@ var cfg config.Database
 
 func Init() error {
 	cfg = config.GetConfig().Database
-	log.Info(fmt.Sprintf("%s:%s@%s", cfg.Username, cfg.Password, cfg.Url))
+	log.Debug(fmt.Sprintf("%s:%s@%s", cfg.Username, cfg.Password, cfg.Url))
 	dsn := fmt.Sprintf("%s:%s@%s", cfg.Username, cfg.Password, cfg.Url)
 	// dsn := "user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})

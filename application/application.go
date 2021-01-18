@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/iris-contrib/middleware/cors"
 	"github.com/iris-contrib/swagger/v12"
 	"github.com/iris-contrib/swagger/v12/swaggerFiles"
 	"github.com/kataras/iris/v12"
@@ -15,12 +14,6 @@ import (
 	"github.com/sluggard/myfile/application/controller"
 	"github.com/sluggard/myfile/config"
 	"github.com/sluggard/myfile/model"
-	// "github.com/snowlyg/blog/application/controllers"
-	// "github.com/snowlyg/blog/application/libs"
-	// "github.com/snowlyg/blog/application/libs/easygorm"
-	// "github.com/snowlyg/blog/application/libs/logging"
-	// "github.com/snowlyg/blog/application/middleware"
-	// "github.com/snowlyg/blog/service/cache"
 )
 
 // HttpServer
@@ -42,8 +35,13 @@ var (
 )
 
 func initSwagger(app *iris.Application) {
-	url := swagger.URL("http://localhost:5678/swagger/doc.json") //The url pointing to API definition
-	app.Get("/swagger/{any:path}", swagger.WrapHandler(swaggerFiles.Handler, url))
+	// url := swagger.URL("http://localhost:5678/swagger/doc.json") //The url pointing to API definition
+	// app.Get("/swagger/{any:path}", swagger.WrapHandler(swaggerFiles.Handler, url))
+	config := &swagger.Config{
+		URL: "http://localhost:5678/swagger/doc.json", //The url pointing to API definition
+	}
+	// use swagger middleware to
+	app.Get("/swagger/{any:path}", swagger.CustomWrapHandler(config, swaggerFiles.Handler))
 }
 
 func NewServer(config config.Config) *HttpServer {
@@ -128,15 +126,20 @@ func AuthRequired(ctx iris.Context) {
 func (s *HttpServer) RouteInit() {
 
 	app := s.App
-	crs := cors.New(cors.Options{
-		AllowedOrigins:   []string{"*"}, // allows everything, use that to change the hosts.
-		AllowCredentials: true,
-	})
+
+	// crs := cors.New(cors.Options{
+	// 	AllowedOrigins:   []string{"*"}, // allows everything, use that to change the hosts.
+	// 	AllowCredentials: true,
+	// 	AllowedMethods:   []string{"HEAD", "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+	// })
+	app.Options("/*", controller.Cors)
+	// app.Party("/*", controller.Cors).AllowMethods(iris.MethodOptions)
+	app.UseGlobal(controller.Cors)
 	app.Use(AuthRequired)
-	app.Party("/", crs).AllowMethods(iris.MethodOptions)
-	// .Handle(AuthRequired())
 	mvc.New(app.Party("/test")).Handle(new(controller.TestController))
 	mvc.New(app.Party("/user")).Handle(controller.NewUserController())
+	// log.Info(app.Macros().Lookup())
+
 	// test.Handle(new(TestController))
 	// test.Get("/ping", controller.GetPing)
 	// test.Get("/help", help)

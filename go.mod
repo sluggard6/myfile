@@ -5,6 +5,7 @@ module github.com/sluggard/myfile
 go 1.15
 
 require (
+	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
 	github.com/go-delve/delve v1.5.1 // indirect
 	github.com/go-openapi/spec v0.20.1 // indirect
@@ -17,7 +18,7 @@ require (
 	github.com/kataras/iris v0.0.2
 	github.com/kataras/iris/v12 v12.2.0-alpha2.0.20210110101619-f4989bd5aaac
 	github.com/sirupsen/logrus v1.7.0
-	github.com/swaggo/swag v1.7.0 // indirect
+	github.com/swaggo/swag v1.7.0
 	github.com/urfave/cli v1.22.5 // indirect
 	golang.org/x/text v0.3.5 // indirect
 	golang.org/x/tools v0.0.0-20210115202250-e0d201561e39 // indirect
