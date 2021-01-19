@@ -1,16 +1,15 @@
 package service
 
 import (
-	"github.com/sirupsen/logrus"
 	"github.com/sluggard/myfile/common"
 	"github.com/sluggard/myfile/model"
 	"github.com/sluggard/myfile/util"
 )
 
 type UserService interface {
-	Login(username string, password string) (*model.User, string)
+	Login(username string, password string) (*model.User, error)
 	Register(user *model.User) error
-	GetById(id int) (*model.User, error)
+	GetById(id uint) (*model.User, error)
 }
 
 func NewUserService() UserService {
@@ -22,20 +21,18 @@ type userService struct {
 	// userDao dao.UserDao
 }
 
-func (s *userService) Login(username string, password string) (*model.User, string) {
-	user, err := model.GetUserByUsername(username)
-	if err != nil {
-		logrus.Error(err.Error())
-		return nil, err.Error()
+func (s *userService) Login(username string, password string) (user *model.User, err error) {
+	if user, err = user.GetUserByUsername(username); err != nil {
+		return nil, err
 	}
 	if checkPassword(user, password) {
 		user.Password = ""
-		return user, "success"
+		return user, nil
 	}
-	return nil, "check password failed"
+	return nil, &common.CommonError{Message: "check password failed"}
 }
 func (s *userService) Register(user *model.User) error {
-	if u, _ := model.GetUserByUsername(user.Username); u.ID > 0 {
+	if user, _ := user.GetUserByUsername(user.Username); user.ID > 0 {
 		return &common.CommonError{Message: "用户已存在"}
 	}
 	user.Salt = util.UUID()
@@ -43,9 +40,8 @@ func (s *userService) Register(user *model.User) error {
 	model.DB.Create(user)
 	return nil
 }
-func (s *userService) GetById(id int) (*model.User, error) {
-	// user := &model.User{}
-	return model.GetUserById(id)
+func (s *userService) GetById(id uint) (user *model.User, err error) {
+	return user.GetUserById(id)
 	// if user, err = model.DB.Where("id=?", id).Find(user); user.ID > 0 {
 	// 	return user, nil
 	// } else {

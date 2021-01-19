@@ -1,8 +1,6 @@
 package controller
 
 import (
-	"fmt"
-
 	"github.com/go-playground/validator/v10"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/sessions"
@@ -35,8 +33,8 @@ func (c *UserController) PostLogin(ctx iris.Context) HttpResult {
 		ctx.StatusCode(iris.StatusBadRequest)
 		return FailedCode(PARAM_ERROR)
 	}
-	if user, message := c.userService.Login(loginForm.Username, loginForm.Password); user == nil {
-		return FailedCodeMessage(LOGIN_FAILED, message)
+	if user, err := c.userService.Login(loginForm.Username, loginForm.Password); user == nil {
+		return FailedCodeMessage(LOGIN_FAILED, err.Error())
 	} else {
 		session := sessions.Get(ctx)
 		session.Set("authenticated", true)
@@ -44,7 +42,7 @@ func (c *UserController) PostLogin(ctx iris.Context) HttpResult {
 	}
 }
 
-func (c *UserController) GetBy(id int) HttpResult {
+func (c *UserController) GetBy(id uint) HttpResult {
 	if user, err := c.userService.GetById(id); err != nil {
 		return Failed()
 	} else {
@@ -63,7 +61,6 @@ func (c *UserController) PostRegister(ctx iris.Context) HttpResult {
 		// an invalid value for validation such as interface with nil
 		// value most including myself do not usually have code like this.
 		if _, ok := err.(*validator.InvalidValidationError); ok {
-			fmt.Println(err)
 			return FailedCodeMessage(PARAM_ERROR, err.Error())
 		}
 

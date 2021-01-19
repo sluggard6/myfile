@@ -11,13 +11,13 @@ type User struct {
 	Salt     string `grom:"not null;commit:'用户掩码'" json:"-"`
 }
 
-func GetUserByUsername(username string) (*User, error) {
+func (u *User) GetUserByUsername(username string) (*User, error) {
 	user := &User{}
 	result := DB.Where("username = ?", username).First(user)
 	return user, result.Error
 }
 
-func GetUserById(id int) (*User, error) {
+func (u *User) GetUserById(id uint) (*User, error) {
 	user := &User{}
 	result := DB.Where("id = ?", id).First(user)
 	return user, result.Error
