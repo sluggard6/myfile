@@ -13,12 +13,17 @@ type User struct {
 
 func (u *User) GetUserByUsername(username string) (*User, error) {
 	user := &User{}
-	result := DB.Where("username = ?", username).First(user)
+	result := db.Where("username = ?", username).First(user)
 	return user, result.Error
 }
 
 func (u *User) GetUserById(id uint) (*User, error) {
 	user := &User{}
-	result := DB.Where("id = ?", id).First(user)
+	result := db.Where("id = ?", id).First(user)
 	return user, result.Error
+}
+
+func (u *User) CreateUser() (int64, error) {
+	result := db.Create(u)
+	return result.RowsAffected, result.Error
 }

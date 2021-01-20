@@ -37,7 +37,8 @@ func (s *userService) Register(user *model.User) error {
 	}
 	user.Salt = util.UUID()
 	user.Password = buildPassword(user.Password, user.Salt)
-	model.DB.Create(user)
+	// model.DB.Create(user)
+	user.CreateUser()
 	return nil
 }
 func (s *userService) GetById(id uint) (user *model.User, err error) {

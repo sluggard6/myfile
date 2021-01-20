@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var DB *gorm.DB
+var db *gorm.DB
 
 var cfg config.Database
 
@@ -19,7 +19,8 @@ func Init() error {
 	log.Debug(fmt.Sprintf("%s:%s@%s", cfg.Username, cfg.Password, cfg.Url))
 	dsn := fmt.Sprintf("%s:%s@%s", cfg.Username, cfg.Password, cfg.Url)
 	// dsn := "user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local"
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	var err error
+	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	// db, err := gorm.Open(sqlite.Open("myfile.db"), &gorm.Config{})
 	if err != nil {
 		log.Error(err)
@@ -39,12 +40,12 @@ func Init() error {
 	// SetConnMaxLifetime sets the maximum amount of time a connection may be reused.
 	sqlDb.SetConnMaxLifetime(time.Hour)
 
-	DB = db
+	// DB = db
 	initTable()
 	return nil
 }
 func initTable() error {
 	// log.Debug(reflect.TypeOf(User{}))
-	DB.AutoMigrate(&User{})
+	db.AutoMigrate(&User{})
 	return nil
 }

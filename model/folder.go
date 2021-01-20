@@ -13,7 +13,7 @@ type Folder struct {
 }
 
 func (f *Folder) Create() (folder *Folder, err error) {
-	if err := DB.Create(folder).Error; err != nil {
+	if err := db.Create(folder).Error; err != nil {
 		log.Warning("无法插入目录记录, %s", err)
 		return nil, err
 	}
