@@ -12,9 +12,8 @@ type UserController struct {
 	userService service.UserService
 }
 
-// ABACD
 func NewUserController() *UserController {
-	return &UserController{userService: service.NewUserService()}
+	return &UserController{service.NewUserService()}
 }
 
 type LoginForm struct {

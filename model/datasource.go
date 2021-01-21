@@ -20,7 +20,7 @@ func Init() error {
 	dsn := fmt.Sprintf("%s:%s@%s", cfg.Username, cfg.Password, cfg.Url)
 	// dsn := "user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local"
 	var err error
-	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{DisableForeignKeyConstraintWhenMigrating: true})
 	// db, err := gorm.Open(sqlite.Open("myfile.db"), &gorm.Config{})
 	if err != nil {
 		log.Error(err)
@@ -47,5 +47,8 @@ func Init() error {
 func initTable() error {
 	// log.Debug(reflect.TypeOf(User{}))
 	db.AutoMigrate(&User{})
+	db.AutoMigrate(&Library{})
+	db.AutoMigrate(&Folder{})
+	db.AutoMigrate(&UserLibraryRole{})
 	return nil
 }
