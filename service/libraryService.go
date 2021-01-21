@@ -2,7 +2,22 @@ package service
 
 import "github.com/sluggard/myfile/model"
 
-func CreateLibrary(userId uint, name string) (*model.Library, error) {
+type LibraryService interface {
+	CreateLibrary(userId uint, name string) (*model.Library, error)
+	getLibraryMine(userId uint) ([]model.Library, error)
+	getLibrarShare(userId uint) ([]model.Library, error)
+}
+
+var libraryService = &librarySer{}
+
+func NewLibraryService() LibraryService {
+	return libraryService
+}
+
+type librarySer struct {
+}
+
+func (s *librarySer) CreateLibrary(userId uint, name string) (*model.Library, error) {
 	if err := checkLibraryName(name); err != nil {
 		return nil, err
 	}
@@ -23,4 +38,11 @@ func CreateLibrary(userId uint, name string) (*model.Library, error) {
 		return nil, err
 	}
 	return library, nil
+}
+func (s *librarySer) getLibraryMine(userId uint) ([]model.Library, error) {
+	library := &model.Library{}
+	return library.GetLibraryMine(userId)
+}
+func (s *librarySer) getLibrarShare(userId uint) ([]model.Library, error) {
+	return nil, nil
 }

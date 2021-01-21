@@ -8,3 +8,8 @@ type Library struct {
 	UserId uint
 	Owner  User `gorm:"foreignKey:UserId"`
 }
+
+func (l *Library) GetLibraryMine(userId uint) (librarys []Library, err error) {
+	err = db.Where("user_id=?", userId).Find(librarys).Error
+	return
+}
