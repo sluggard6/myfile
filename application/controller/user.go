@@ -37,8 +37,14 @@ func (c *UserController) PostLogin(ctx iris.Context) HttpResult {
 	} else {
 		session := sessions.Get(ctx)
 		session.Set("authenticated", true)
+		session.Set("user", user)
 		return Success(&LoginInfo{User: user, Token: session.ID()})
 	}
+}
+
+func (c *UserController) GetInfo(ctx iris.Context) HttpResult {
+	session := sessions.Get(ctx)
+	return c.GetBy(session.Get("user").(*model.User).ID)
 }
 
 func (c *UserController) GetBy(id uint) HttpResult {
@@ -48,7 +54,6 @@ func (c *UserController) GetBy(id uint) HttpResult {
 		user.Password = ""
 		return Success(user)
 	}
-
 }
 func (c *UserController) PostRegister(ctx iris.Context) HttpResult {
 	user := &model.User{}

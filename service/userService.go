@@ -41,17 +41,14 @@ func (s *userSer) Register(user *model.User) error {
 	user.Salt = util.UUID()
 	user.Password = buildPassword(user.Password, user.Salt)
 	// model.DB.Create(user)
+
 	model.Create(user)
 	libraryService.CreateLibrary(user.ID, "Default Library")
 	return nil
 }
+
 func (s *userSer) GetById(id uint) (user *model.User, err error) {
 	return user.GetUserById(id)
-	// if user, err = model.DB.Where("id=?", id).Find(user); user.ID > 0 {
-	// 	return user, nil
-	// } else {
-	// 	return nil, err
-	// }
 }
 
 func checkLibraryName(name string) error {

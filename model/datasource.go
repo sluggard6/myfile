@@ -49,6 +49,6 @@ func initTable() error {
 	db.AutoMigrate(&User{})
 	db.AutoMigrate(&Library{})
 	db.AutoMigrate(&Folder{})
-	db.AutoMigrate(&UserLibraryRole{})
+	db.AutoMigrate(&ShareLibrary{})
 	return nil
 }

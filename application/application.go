@@ -138,6 +138,10 @@ func (s *HttpServer) RouteInit() {
 	app.Use(AuthRequired, sess.Handler())
 	mvc.New(app.Party("/test")).Handle(new(controller.TestController))
 	mvc.New(app.Party("/user")).Handle(controller.NewUserController())
+	mvc.New(app.Party("/library")).Handle(controller.NewLibraryController())
+	for _, route := range app.APIBuilder.GetRoutes() {
+		log.Info(route)
+	}
 	// log.Info(app.Macros().Lookup())
 
 	// test.Handle(new(TestController))

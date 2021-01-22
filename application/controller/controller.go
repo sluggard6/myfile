@@ -37,6 +37,10 @@ func Failed() HttpResult {
 	return HttpResult{FAILED, "failed", nil}
 }
 
+func FailedMessage(message string) HttpResult {
+	return HttpResult{FAILED, message, nil}
+}
+
 func FailedCode(code MessageCode) HttpResult {
 	return HttpResult{code, failedMessage[code], nil}
 }
