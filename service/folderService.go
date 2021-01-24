@@ -22,6 +22,6 @@ func (s *folderSer) GetChildrenFolder(folderId uint) (*[]model.Folder, error) {
 }
 
 func (s *folderSer) GetChildrenFile(folderId uint) (*[]model.File, error) {
-	file := &model.File{FolderId: folderId}
+	file := &model.File{FolderID: folderId}
 	return file.GetFilesByFolderId()
 }

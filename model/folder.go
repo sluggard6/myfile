@@ -18,6 +18,7 @@ func (f *Folder) IsRoot() bool {
 }
 
 func (f *Folder) GetChildren() (subFolders *[]Folder, err error) {
+	subFolders = &[]Folder{}
 	err = db.Where("parent_id=?", f.ID).Find(subFolders).Error
 	return
 }

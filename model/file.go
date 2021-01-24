@@ -1,5 +1,6 @@
 package model
 
+//Policy 存储策略
 type Policy struct {
 	Model
 	Type string
@@ -8,14 +9,17 @@ type Policy struct {
 	Sha  string
 }
 
+//File 文件
 type File struct {
 	Model
 	Name     string
-	FolderId uint
+	FolderID uint
+	Size     uint
 	policy   Policy
 }
 
 func (file *File) GetFilesByFolderId() (files *[]File, err error) {
-	err = db.Where("folder_id=?", file.FolderId).Find(files).Error
+	files = &[]File{}
+	err = db.Where("folder_id=?", file.FolderID).Find(files).Error
 	return
 }

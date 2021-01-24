@@ -24,7 +24,8 @@ func (c *FolderController) GetBy(folderId uint, ctx iris.Context) HttpResult {
 	folder := &model.Folder{}
 	model.GetById(folder, folderId)
 	sess := sessions.Get(ctx)
-	if sess.Get("user").(model.User).ID != folder.ID {
+	user := sess.Get("user")
+	if !user.(*model.User).HasLibrary(folder.LibraryId) {
 		return FailedForbidden(ctx)
 	}
 	folders, _ := c.folderService.GetChildrenFolder(folderId)

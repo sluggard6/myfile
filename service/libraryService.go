@@ -58,7 +58,7 @@ func (s *librarySer) ShareLibrary(libraryId uint, userIds []uint) error {
 	var librarys []model.ShareLibrary
 	for _, userId := range userIds {
 		// libraryId[i] = model.ShareLibrary{}
-		librarys = append(librarys, model.ShareLibrary{UserId: userId, LibraryId: libraryId, Role: model.Write})
+		librarys = append(librarys, model.ShareLibrary{UserID: userId, LibraryID: libraryId, Role: model.Write})
 
 	}
 	_, err := model.Create(&librarys)
@@ -76,6 +76,6 @@ func (s *librarySer) ShareLibraryOne(libraryId uint, userId uint) error {
 	if shareLibrary, _ = shareLibrary.GetLibraryByUserAndLibrary(userId, libraryId); shareLibrary.ID > 0 {
 		return common.CommonError{fmt.Sprintf("共享资料库已存在", libraryId)}
 	}
-	_, err := model.Create(&model.ShareLibrary{UserId: userId, LibraryId: libraryId})
+	_, err := model.Create(&model.ShareLibrary{UserID: userId, LibraryID: libraryId})
 	return err
 }
