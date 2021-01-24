@@ -18,6 +18,7 @@ const (
 	FAILED       MessageCode = 1
 	PARAM_ERROR  MessageCode = 2
 	LOGIN_FAILED MessageCode = 101
+	// ctx.StatusCode(iris.StatusForbidden)
 )
 
 var validate *validator.Validate = validator.New()
@@ -49,6 +50,10 @@ func FailedCodeMessage(code MessageCode, message string) HttpResult {
 	return HttpResult{Code: code, Message: message, Data: nil}
 }
 
+func FailedForbidden(ctx iris.Context) HttpResult {
+	ctx.StatusCode(iris.StatusForbidden)
+	return HttpResult{Code: 401, Message: "forbidden"}
+}
 func Cors(ctx iris.Context) {
 	ctx.Header("Access-Control-Allow-Origin", "http://localhost:9528")
 	ctx.Header("Access-Control-Allow-Credentials", "true")
