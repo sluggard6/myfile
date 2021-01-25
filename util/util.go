@@ -5,6 +5,7 @@ import (
 	"crypto/md5"
 	"crypto/sha256"
 	"fmt"
+	"io"
 	"strings"
 	"unsafe"
 
@@ -19,6 +20,26 @@ func ShaString(s string) string {
 	// return ""
 	// return *(*string)(unsafe.Pointer(&h.Sum([]byte(s))))
 	// return string(h.Sum(nil)[:])
+}
+func ShaReader(reader io.Reader) (int, string, error) {
+	hash := sha256.New()
+	block := make([]byte, hash.BlockSize())
+	var size int
+	for {
+		i, err := reader.Read(block)
+		if err != nil {
+			if err != io.EOF {
+				return 0, "", err
+			} else {
+				hash.Write(block[0:i])
+				size += i
+				break
+			}
+		}
+		hash.Write(block)
+		size += hash.BlockSize()
+	}
+	return size, fmt.Sprintf("%x", hash.Sum(nil)), nil
 }
 func UUID() string {
 	var buffer bytes.Buffer

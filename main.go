@@ -1,8 +1,10 @@
 package main
 
 import (
+	"crypto/sha256"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/sirupsen/logrus"
@@ -55,4 +57,25 @@ func main() {
 
 	// logging.InfoLogger.Infof("http server %s:%d start", libs.Config.Host, libs.Config.Port)
 
+}
+
+func ShaReader(reader io.Reader) (int, string, error) {
+	hash := sha256.New()
+	block := make([]byte, hash.BlockSize())
+	var size int
+	for {
+		i, err := reader.Read(block)
+		if err != nil {
+			if err != io.EOF {
+				return 0, "", err
+			} else {
+				hash.Write(block[0:i])
+				size += i
+				break
+			}
+		}
+		hash.Write(block)
+		size += hash.BlockSize()
+	}
+	return size, fmt.Sprintf("%x", hash.Sum(nil)), nil
 }
