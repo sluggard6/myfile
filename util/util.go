@@ -15,13 +15,8 @@ import (
 func ShaString(s string) string {
 	hash := sha256.Sum256([]byte(s))
 	return fmt.Sprintf("%x", hash[:])
-	// h := sha256.New()
-	// h.Write([]byte(s))
-	// return ""
-	// return *(*string)(unsafe.Pointer(&h.Sum([]byte(s))))
-	// return string(h.Sum(nil)[:])
 }
-func ShaReader(reader io.Reader) (int, string, error) {
+func ShaReader(reader io.Reader) (int, []byte, error) {
 	hash := sha256.New()
 	block := make([]byte, hash.BlockSize())
 	var size int
@@ -29,17 +24,15 @@ func ShaReader(reader io.Reader) (int, string, error) {
 		i, err := reader.Read(block)
 		if err != nil {
 			if err != io.EOF {
-				return 0, "", err
+				return 0, nil, err
 			} else {
-				hash.Write(block[0:i])
-				size += i
 				break
 			}
 		}
-		hash.Write(block)
-		size += hash.BlockSize()
+		hash.Write(block[0:i])
+		size += i
 	}
-	return size, fmt.Sprintf("%x", hash.Sum(nil)), nil
+	return size, hash.Sum(nil), nil
 }
 func UUID() string {
 	var buffer bytes.Buffer
