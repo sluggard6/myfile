@@ -5,8 +5,8 @@ type User struct {
 	Username      string         `gorm:"unique_index:idx_only_one;commit:'用户名'" validate:"required"`
 	Password      string         `gorm:"not null;commit:'用户密码'" validate:"required"`
 	Salt          string         `grom:"not null;commit:'用户掩码'" json:"-"`
-	Librarys      []Library      `gorm:"foreignKey:UserId"`
-	ShareLibrarys []ShareLibrary `gorm:"foreignKey:UserId"`
+	Librarys      []Library      `gorm:"foreignKey:UserID"`
+	ShareLibrarys []ShareLibrary `gorm:"foreignKey:UserID"`
 }
 
 func (u *User) GetUserByUsername(username string) (*User, error) {

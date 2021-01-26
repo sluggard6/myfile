@@ -10,7 +10,7 @@ const (
 type Library struct {
 	Model
 	Name       string `json:"name"`
-	UserId     uint   `json:"-"`
+	UserID     uint   `json:"-"`
 	Owner      User   `gorm:"foreignKey:UserId" json:"owner"`
 	RootFolder Folder `gorm:"foreignKey:LibraryId" json:"rootFolder"`
 }
@@ -19,7 +19,7 @@ type ShareLibrary struct {
 	Model
 	UserID    uint    `json:"userId"`
 	LibraryID uint    `json:"libraryId"`
-	Library   Library `gorm:"foreignKey:ID;references:LibraryId"`
+	Library   Library `gorm:"foreignKey:ID;references:LibraryID"`
 	Role      LibraryRole
 }
 
