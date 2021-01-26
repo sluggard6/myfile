@@ -24,9 +24,8 @@ type FileStore struct {
 
 type File struct {
 	Path string
-	Name string
 	Sha  string
-	Size int
+	Size int64
 }
 
 func New(root string) (*FileStore, error) {
@@ -51,7 +50,7 @@ func (fs *FileStore) saveFile(reader io.Reader, name string) (*File, error) {
 		return nil, err
 	}
 	hexString := hex.EncodeToString(sha)
-	var fileName = fs.Root + string(filepath.Separator) + strings.Join(makeFilePath(hexString), string(filepath.Separator))
+	var fileName = fs.Root + string(filepath.Separator) + strings.Join(makeFilePath(hexString), string(filepath.Separator)) + filepath.Ext(name)
 	logrus.Debugf("store file : %s", fileName)
 	dir, name := filepath.Split(fileName)
 	if err := os.MkdirAll(dir, 0744); err != nil {
@@ -59,7 +58,8 @@ func (fs *FileStore) saveFile(reader io.Reader, name string) (*File, error) {
 	}
 
 	os.Rename(tmpFile.Name(), fileName)
-	return &File{"", fileName, hex.EncodeToString(sha), size}, nil
+	stat, err := tmpFile.Stat()
+	return &File{fileName, hexString, stat.Size()}, nil
 }
 
 func (fs *FileStore) NewTmpFile() (*os.File, error) {
