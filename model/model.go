@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/sluggard/myfile/util"
 	"gorm.io/gorm"
 )
 
@@ -13,6 +14,22 @@ type JsonTime time.Time
 func (this JsonTime) MarshalJSON() ([]byte, error) {
 	var stamp = fmt.Sprintf("\"%s\"", time.Time(this).Format("2006-01-02 15:04:05"))
 	return []byte(stamp), nil
+}
+
+// func (this JsonTime) Value() (time.Time, error) {
+// 	return time.Time(this), nil
+// }
+
+func (this JsonTime) Scan(src interface{}) error {
+	this = src.(JsonTime)
+	return nil
+}
+
+func (this JsonTime) UnmarshalJSON(b []byte) error {
+	// var err error
+	t, err := time.Parse("2006-01-02 15:04:05", util.ByteArrayToString(b))
+	this = JsonTime(t)
+	return err
 }
 
 type Model struct {

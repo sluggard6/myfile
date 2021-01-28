@@ -42,7 +42,9 @@ func (s *userSer) Register(user *model.User) error {
 	user.Password = buildPassword(user.Password, user.Salt)
 	// model.DB.Create(user)
 
-	model.Create(user)
+	if _, err := model.Create(user); err != nil {
+		return err
+	}
 	libraryService.CreateLibrary(user.ID, "Default Library")
 	return nil
 }

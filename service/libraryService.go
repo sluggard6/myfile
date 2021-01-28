@@ -31,11 +31,11 @@ func (s *librarySer) CreateLibrary(userId uint, name string) (*model.Library, er
 	if err != nil {
 		return nil, err
 	}
-	library := &model.Library{Name: name, UserId: userId}
+	library := &model.Library{Name: name, UserID: userId}
 	if _, err := model.Create(library); err != nil {
 		return nil, err
 	}
-	folder := &model.Folder{Name: "/", LibraryId: library.ID}
+	folder := &model.Folder{Name: "/", LibraryID: library.ID}
 	if _, err := model.Create(folder); err != nil {
 		return nil, err
 	}

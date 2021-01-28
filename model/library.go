@@ -11,8 +11,8 @@ type Library struct {
 	Model
 	Name       string `json:"name"`
 	UserID     uint   `json:"-"`
-	Owner      User   `gorm:"foreignKey:UserId" json:"owner"`
-	RootFolder Folder `gorm:"foreignKey:LibraryId" json:"rootFolder"`
+	Owner      User   `gorm:"foreignKey:UserID" json:"owner"`
+	RootFolder Folder `gorm:"foreignKey:LibraryID" json:"rootFolder"`
 }
 
 type ShareLibrary struct {

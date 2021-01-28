@@ -4,7 +4,7 @@ package model
 type Policy struct {
 	Model
 	Type string
-	Name string
+	size int64
 	Path string
 	Sha  string
 }
@@ -12,10 +12,12 @@ type Policy struct {
 //File 文件
 type File struct {
 	Model
-	Name     string
-	FolderID uint
-	Size     uint
-	policy   Policy
+	Name     string `json:"name"`
+	Ext      string `json:"ext"`
+	FolderID uint   `json:"-"`
+	Size     uint   `json:"size"`
+	PolicyID uint   `json:"-"`
+	Policy   Policy `gorm:"foreignKey:PolicyID" json:"-"`
 }
 
 func (file *File) GetFilesByFolderId() (files *[]File, err error) {
