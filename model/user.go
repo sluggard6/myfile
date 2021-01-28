@@ -2,11 +2,11 @@ package model
 
 type User struct {
 	Model
-	Username      string         `gorm:"unique_index:idx_only_one;commit:'用户名'" validate:"required"`
-	Password      string         `gorm:"not null;commit:'用户密码'" validate:"required"`
+	Username      string         `gorm:"unique_index:idx_only_one;commit:'用户名'" validate:"required" json:"username"`
+	Password      string         `gorm:"not null;commit:'用户密码'" validate:"required" json:"password"`
 	Salt          string         `grom:"not null;commit:'用户掩码'" json:"-"`
-	Librarys      []Library      `gorm:"foreignKey:UserID"`
-	ShareLibrarys []ShareLibrary `gorm:"foreignKey:UserID"`
+	Librarys      []Library      `gorm:"foreignKey:UserID" json:"librarys"`
+	ShareLibrarys []ShareLibrary `gorm:"foreignKey:UserID" json:"shareLibrarys"`
 }
 
 func (u *User) GetUserByUsername(username string) (*User, error) {

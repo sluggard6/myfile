@@ -4,39 +4,44 @@ import (
 	"fmt"
 	"time"
 
+	"database/sql/driver"
+
 	"github.com/sluggard/myfile/util"
 	"gorm.io/gorm"
 )
 
+//JsonTime time.Time的变体，为满足自定义序列化
 type JsonTime time.Time
 
-// 实现它的json序列化方法
-func (this JsonTime) MarshalJSON() ([]byte, error) {
-	var stamp = fmt.Sprintf("\"%s\"", time.Time(this).Format("2006-01-02 15:04:05"))
+//MarshalJSON 实现它的json序列化方法
+func (jtime JsonTime) MarshalJSON() ([]byte, error) {
+	var stamp = fmt.Sprintf("\"%s\"", time.Time(jtime).Format("2006-01-02 15:04:05"))
 	return []byte(stamp), nil
 }
 
-// func (this JsonTime) Value() (time.Time, error) {
-// 	return time.Time(this), nil
-// }
+func (jtime JsonTime) Value() (driver.Value, error) {
+	return time.Time(jtime), nil
+}
 
-func (this JsonTime) Scan(src interface{}) error {
-	this = src.(JsonTime)
+//Scan 反射时转换为指针类型
+func (jtime *JsonTime) Scan(src interface{}) error {
+	*jtime = JsonTime(src.(time.Time))
 	return nil
 }
 
-func (this JsonTime) UnmarshalJSON(b []byte) error {
+func (jtime *JsonTime) UnmarshalJSON(b []byte) error {
 	// var err error
 	t, err := time.Parse("2006-01-02 15:04:05", util.ByteArrayToString(b))
-	this = JsonTime(t)
+	*jtime = JsonTime(t)
 	return err
 }
 
+//Model 替换gorm.Model
 type Model struct {
 	ID        uint           `gorm:"primarykey" json:"id"`
-	CreatedAt JsonTime       `json:"created_at"`
-	UpdatedAt JsonTime       `json:"updated_at"`
-	DeletedAt gorm.DeletedAt `gorm:"index" json:"delete_at"`
+	CreatedAt JsonTime       `json:"createdAt"`
+	UpdatedAt JsonTime       `json:"updatedAt"`
+	DeletedAt gorm.DeletedAt `gorm:"index" json:"deleteAt"`
 }
 
 func Create(model interface{}) (int64, error) {
