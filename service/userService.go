@@ -9,6 +9,7 @@ import (
 	"github.com/sluggard/myfile/util"
 )
 
+//UserService 用户服务
 type UserService interface {
 	Login(username string, password string) (*model.User, error)
 	Register(user *model.User) error
@@ -17,6 +18,7 @@ type UserService interface {
 
 var userService = &userSer{}
 
+//NewUserService 返回单例的用户服务
 func NewUserService() UserService {
 	return userService
 }
@@ -29,7 +31,7 @@ func (s *userSer) Login(username string, password string) (user *model.User, err
 		return nil, err
 	}
 	if checkPassword(user, password) {
-		user.Password = ""
+		user.Password = "******"
 		return user, nil
 	}
 	return nil, &common.CommonError{Message: "check password failed"}

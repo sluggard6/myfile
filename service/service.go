@@ -2,6 +2,7 @@ package service
 
 import "github.com/sluggard/myfile/model"
 
-func GetById(modelEntity interface{}, id uint) (interface{}, error) {
+//GetByID 统一的根据id查询对象方法
+func GetByID(modelEntity interface{}, id uint) (interface{}, error) {
 	return model.GetById(modelEntity, id)
 }

@@ -65,17 +65,17 @@ func (s *librarySer) ShareLibrary(libraryId uint, userIds []uint) error {
 	return err
 }
 
-func (s *librarySer) ShareLibraryOne(libraryId uint, userId uint) error {
-	if user, _ := userService.GetById(userId); user.ID <= 0 {
-		return common.CommonError{fmt.Sprintf("can't find user %s", libraryId)}
+func (s *librarySer) ShareLibraryOne(libraryID uint, userID uint) error {
+	if user, _ := userService.GetById(userID); user.ID <= 0 {
+		return common.CommonError{fmt.Sprintf("can't find user %d", libraryID)}
 	}
-	if library, _ := model.GetById(&model.Library{}, libraryId); library.(model.Library).ID <= 0 {
-		return common.CommonError{fmt.Sprintf("can't find library %s", libraryId)}
+	if library, _ := model.GetById(&model.Library{}, libraryID); library.(model.Library).ID <= 0 {
+		return common.CommonError{fmt.Sprintf("can't find library %d", libraryID)}
 	}
 	shareLibrary := &model.ShareLibrary{}
-	if shareLibrary, _ = shareLibrary.GetLibraryByUserAndLibrary(userId, libraryId); shareLibrary.ID > 0 {
-		return common.CommonError{fmt.Sprintf("共享资料库已存在", libraryId)}
+	if shareLibrary, _ = shareLibrary.GetLibraryByUserAndLibrary(userID, libraryID); shareLibrary.ID > 0 {
+		return common.CommonError{Message: fmt.Sprintf("共享资料库%s(id:%d)已存在", shareLibrary.Library.Name, libraryID)}
 	}
-	_, err := model.Create(&model.ShareLibrary{UserID: userId, LibraryID: libraryId})
+	_, err := model.Create(&model.ShareLibrary{UserID: userID, LibraryID: libraryID})
 	return err
 }

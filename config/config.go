@@ -9,11 +9,16 @@ import (
 type Config struct {
 	Server   Server
 	Database Database
+	Stroe    Store
 }
 
 type Server struct {
 	Host string
 	Port int
+}
+
+type Store struct {
+	DataRoot string
 }
 
 type Database struct {
