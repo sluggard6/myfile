@@ -14,13 +14,14 @@ import (
 	"github.com/sluggard/myfile/application/controller"
 	"github.com/sluggard/myfile/config"
 	"github.com/sluggard/myfile/model"
+	"github.com/sluggard/myfile/store"
 )
 
 // HttpServer
 type HttpServer struct {
 	Config config.Config
 	App    *iris.Application
-	Models []interface{}
+	Store  store.Store
 	Status bool
 }
 
@@ -47,13 +48,7 @@ func initSwagger(app *iris.Application) {
 func NewServer(config config.Config) *HttpServer {
 	app := iris.New()
 	initSwagger(app)
-	// app.UseRouter(recover.New())
-	// app.Use(AuthRequired())
-	// app.Logger().SetLevel(libs.Config.LogLevel)
-	// iris.RegisterOnInterrupt(func() {
-	// sql, _ := easygorm.GetEasyGormDb().DB()
-	// sql.Close()
-	// })
+
 	httpServer := &HttpServer{
 		Config: config,
 		App:    app,
@@ -98,7 +93,12 @@ func (s *HttpServer) _Init() error {
 	// if libs.Config.Cache.Driver == "redis" {
 	// 	cache.InitRedisCluster(libs.GetRedisUris(), libs.Config.Redis.Password)
 	// }
-	if err := model.Init(); err != nil {
+	var err error
+	if s.Store, err = store.New(s.Config.Stroe.DataRoot); err != nil {
+		log.Error(err.Error())
+		return err
+	}
+	if err = model.Init(); err != nil {
 		log.Error(err.Error())
 		return err
 	}

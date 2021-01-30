@@ -15,3 +15,7 @@ func TestReadCustomViaUnmarshaler(t *testing.T) {
 	e.OPTIONS("/").WithText("addr: localhost:8080\nserverName: Iris").Expect().
 		Status(httptest.StatusOK).Body().Equal(expectedResponse)
 }
+
+func TestServiceIpl(t *testing.T) {
+
+}

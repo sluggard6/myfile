@@ -40,7 +40,7 @@ func New(root string) (*FileStore, error) {
 	return &FileStore{root, tmp}, nil
 }
 
-func (fs *FileStore) saveFile(reader io.Reader, name string) (*File, error) {
+func (fs *FileStore) SaveFile(reader io.Reader, name string) (*File, error) {
 	tmpFile, err := fs.NewTmpFile()
 	if err != nil {
 		return nil, err
