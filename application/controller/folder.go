@@ -37,11 +37,11 @@ func (c *FolderController) GetBy(folderID uint, ctx iris.Context) HttpResult {
 	var err error
 	folders, err = c.folderService.GetChildrenFolder(folderID)
 	if err != nil {
-		FailedMessage(err.Error())
+		return FailedMessage(err.Error())
 	}
 	files, err = c.folderService.GetChildrenFile(folderID)
 	if err != nil {
-		FailedMessage(err.Error())
+		return FailedMessage(err.Error())
 	}
 	return Success(&Children{folders, files})
 }

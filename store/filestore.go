@@ -37,6 +37,7 @@ func New(root string) (*FileStore, error) {
 		return nil, err
 	}
 	tmp := root + string(filepath.Separator) + defaultTmp
+	os.MkdirAll(tmp, 0744)
 	return &FileStore{root, tmp}, nil
 }
 
@@ -45,7 +46,10 @@ func (fs *FileStore) SaveFile(reader io.Reader, name string) (*File, error) {
 	if err != nil {
 		return nil, err
 	}
-	sha, err := util.SaveAndSha(reader, tmpFile)
+	sha, size, err := util.SaveAndSha(reader, tmpFile)
+	if err != nil {
+		return nil, err
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -58,8 +62,7 @@ func (fs *FileStore) SaveFile(reader io.Reader, name string) (*File, error) {
 	}
 
 	os.Rename(tmpFile.Name(), fileName)
-	stat, err := tmpFile.Stat()
-	return &File{fileName, hexString, stat.Size()}, nil
+	return &File{fileName, hexString, size}, nil
 }
 
 func (fs *FileStore) NewTmpFile() (*os.File, error) {

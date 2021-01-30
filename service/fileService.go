@@ -2,14 +2,14 @@ package service
 
 import (
 	"io"
-	"unsafe"
+	"path/filepath"
 
 	"github.com/sluggard/myfile/model"
 	"github.com/sluggard/myfile/store"
 )
 
 type FileService interface {
-	SaveFile(file io.Reader, name string, folder *model.Folder) (*model.File, error)
+	SaveFile(reader io.Reader, name string, folder *model.Folder) (*model.File, error)
 }
 
 type myFileSer struct {
@@ -19,15 +19,31 @@ type myFileSer struct {
 var myFileService *myFileSer
 
 //NewFileService 根据存储类型创建文件服务
-func NewFileService(store store.Store) *FileService {
+func NewFileService(store store.Store) FileService {
 	if myFileService == nil {
 		myFileService = &myFileSer{store}
 	}
-	// return myFileService
-	return (*FileService)(unsafe.Pointer(myFileService))
+	return myFileService
+	// return (*FileService)(unsafe.Pointer(myFileService))
 }
 
-func (s *myFileSer) SaveFile(file io.Reader, name string, folder *model.Folder) (*model.File, error) {
+func (s *myFileSer) checkPolicy() {
 
-	return nil, nil
+}
+
+func (s *myFileSer) SaveFile(reader io.Reader, name string, folder *model.Folder) (*model.File, error) {
+	if err := folderService.checkFileName(folder, name); err != nil {
+		return nil, err
+	}
+	storeFile, err := s.store.SaveFile(reader, name)
+	if err != nil {
+		return nil, err
+	}
+	policy := &model.Policy{Type: model.MyFile, Path: storeFile.Path, Sha: storeFile.Sha}
+	if err := policy.CheckOrCreat(); err != nil {
+		return nil, err
+	}
+	file := &model.File{Name: name, Ext: filepath.Ext(name), FolderID: folder.ID, PolicyID: policy.ID, Size: uint64(storeFile.Size)}
+	_, err = model.Create(file)
+	return file, err
 }

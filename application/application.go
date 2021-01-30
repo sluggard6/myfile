@@ -134,6 +134,7 @@ func (s *HttpServer) RouteInit() {
 	mvc.New(app.Party("/user")).Handle(controller.NewUserController())
 	mvc.New(app.Party("/library")).Handle(controller.NewLibraryController())
 	mvc.New(app.Party("/folder")).Handle(controller.NewFolderController())
+	mvc.New(app.Party("/file")).Handle(controller.NewFileController(s.Store))
 	for _, route := range app.APIBuilder.GetRoutes() {
 		log.Info(route)
 	}

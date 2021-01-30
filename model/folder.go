@@ -1,8 +1,7 @@
 package model
 
 import (
-	"fmt"
-
+	"github.com/sirupsen/logrus"
 	"github.com/sluggard/myfile/common"
 )
 
@@ -24,9 +23,15 @@ func (f *Folder) GetChildren() (subFolders *[]Folder, err error) {
 	return
 }
 
+//GetChildrenFiles 查询目录下的所有文件
+// func (f *Folder) GetChildrenFiles() (files *[]File, err error) {
+// 	err = db.Where("folder_id=?", f.ID).Find(files).Error
+// 	return
+// }
+
 func (f *Folder) GetParent() (parent *Folder, err error) {
 	if f.IsRoot() {
-		err = common.CommonError{"root folder has not Parent"}
+		err = common.CommonError{Message: "root folder has not Parent"}
 		return
 	}
 	err = db.Where("id=?", f.ParentID).Find(parent).Error
@@ -36,7 +41,7 @@ func (f *Folder) GetParent() (parent *Folder, err error) {
 func (f *Folder) GetPath() (path []Folder, err error) {
 	var appendFolder = func(folder *Folder) {
 		path = append(path, *folder)
-		fmt.Printf("path:%d:{id:%s,parent:%s}\n", len(path), folder.ID, folder.ParentID)
+		logrus.Debug("path:%d:{id:%s,parent:%s}\n", len(path), folder.ID, folder.ParentID)
 		return
 	}
 	tp := f

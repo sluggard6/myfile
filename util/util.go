@@ -17,19 +17,22 @@ func ShaString(s string) string {
 	hash := sha256.Sum256([]byte(s))
 	return fmt.Sprintf("%x", hash[:])
 }
-func ShaReader(reader io.Reader) ([]byte, error) {
+func ShaReader(reader io.Reader) ([]byte, int64, error) {
 	return SaveAndSha(reader, nil)
 }
 
-func SaveAndSha(reader io.Reader, file *os.File) ([]byte, error) {
-	defer file.Close()
+func SaveAndSha(reader io.Reader, file *os.File) ([]byte, int64, error) {
+	if file != nil {
+		defer file.Close()
+	}
 	hash := sha256.New()
+	size := int64(0)
 	block := make([]byte, hash.BlockSize())
 	for {
 		i, err := reader.Read(block)
 		if err != nil {
 			if err != io.EOF {
-				return nil, err
+				return nil, size, err
 			} else {
 				break
 			}
@@ -38,8 +41,9 @@ func SaveAndSha(reader io.Reader, file *os.File) ([]byte, error) {
 			file.Write(block[:i])
 		}
 		hash.Write(block[:i])
+		size += int64(i)
 	}
-	return hash.Sum(nil), nil
+	return hash.Sum(nil), size, nil
 }
 
 func UUID() string {

@@ -4,7 +4,6 @@ package model
 type Policy struct {
 	Model
 	Type PolicyType
-	size int64
 	Path string
 	Sha  string
 }
@@ -23,7 +22,7 @@ type File struct {
 	Name     string `json:"name"`
 	Ext      string `json:"ext"`
 	FolderID uint   `json:"-"`
-	Size     uint   `json:"size"`
+	Size     uint64 `json:"size"`
 	PolicyID uint   `json:"-"`
 	Policy   Policy `gorm:"foreignKey:PolicyID" json:"-"`
 }
@@ -32,5 +31,16 @@ type File struct {
 func (file *File) GetFilesByFolderID() (files *[]File, err error) {
 	files = &[]File{}
 	err = db.Where("folder_id=?", file.FolderID).Find(files).Error
+	return
+}
+
+func (policy *Policy) CheckOrCreat() (err error) {
+	if err = db.Where("sha=?", policy.Sha).Find(policy).Error; err != nil {
+		return
+	}
+	if policy.ID == 0 {
+		err = db.Create(policy).Error
+	}
+
 	return
 }
