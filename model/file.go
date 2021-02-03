@@ -19,12 +19,13 @@ const (
 //File 文件
 type File struct {
 	Model
-	Name     string `json:"name"`
-	Ext      string `json:"ext"`
-	FolderID uint   `json:"-"`
-	Size     uint64 `json:"size"`
-	PolicyID uint   `json:"-"`
-	Policy   Policy `gorm:"foreignKey:PolicyID" json:"-"`
+	Name     string  `json:"name"`
+	Ext      string  `json:"ext"`
+	FolderID uint    `json:"-"`
+	Folder   *Folder `gorm:"foreignKey:FolderID" json:"-"`
+	Size     uint64  `json:"size"`
+	PolicyID uint    `json:"-"`
+	Policy   *Policy `gorm:"foreignKey:PolicyID" json:"-"`
 }
 
 //GetFilesByFolderID 查询目录下的所有文件
@@ -41,6 +42,5 @@ func (policy *Policy) CheckOrCreat() (err error) {
 	if policy.ID == 0 {
 		err = db.Create(policy).Error
 	}
-
 	return
 }
