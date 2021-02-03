@@ -11,7 +11,7 @@ type User struct {
 
 func (u *User) GetUserByUsername(username string) (*User, error) {
 	user := &User{}
-	result := db.Where("username = ?", username).Joins("Librarys").Joins("ShareLibrarys").First(user)
+	result := db.Where("username = ?", username).Preload("Librarys").Preload("ShareLibrarys").First(user)
 	return user, result.Error
 }
 
