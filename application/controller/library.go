@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"fmt"
+
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/sessions"
 	"github.com/sluggard/myfile/model"
@@ -37,15 +39,35 @@ func (c *LibraryController) Get(ctx iris.Context) HttpResult {
 
 func (c *LibraryController) Put(ctx iris.Context) HttpResult {
 	user := sessions.Get(ctx).Get("user").(*model.User)
-	library := &model.Library{}
-	ctx.ReadJSON(library)
-	if user.HasLibraryName(library.Name) {
-		return FailedMessage("重复的名称")
+	name := ctx.URLParam("name")
+	if user.HasLibraryName(name) {
+		return FailedMessage(fmt.Sprintf("资料库'%s'已存在", name))
 	}
-	library.UserID = user.ID
-	_, err := c.libraryService.CreateLibrary(user.ID, library.Name)
+	library, err := c.libraryService.CreateLibrary(user.ID, name)
 	if err != nil {
 		return FailedMessage(err.Error())
 	}
 	return Success(library)
+}
+
+func (c *LibraryController) GetCheck(ctx iris.Context) HttpResult {
+	name := ctx.URLParam("name")
+	user := sessions.Get(ctx).Get("user").(*model.User)
+	if user.HasLibraryName(name) {
+		return SuccessMessage(fmt.Sprintf("资料库'%s'已存在", name), false)
+	} else {
+		return Success(true)
+	}
+}
+
+func (c *LibraryController) DeleteBy(id uint, ctx iris.Context) HttpResult {
+	user := sessions.Get(ctx).Get("user").(*model.User)
+	if b, _ := user.HasLibrary(id); !b {
+		return FailedForbidden(ctx)
+	}
+	i, err := c.libraryService.DeleteLibrary(id)
+	if err != nil {
+		return FailedMessage(err.Error())
+	}
+	return Success(i)
 }

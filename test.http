@@ -20,3 +20,10 @@ Content-Type: application/octet-stream
 
 < test.png
 ------WebKitFormBoundaryL3uJ3c0mfMKL94BR--
+
+###checkLibraryName false
+GET {{host}}/library/check?name=Default Library
+
+
+###checkLibraryName true
+GET {{host}}/library/check?name=test

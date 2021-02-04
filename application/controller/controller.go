@@ -34,6 +34,10 @@ func Success(data interface{}) HttpResult {
 	return HttpResult{SUCCESS, "success", data}
 }
 
+func SuccessMessage(message string, data interface{}) HttpResult {
+	return HttpResult{SUCCESS, message, data}
+}
+
 func Failed() HttpResult {
 	return HttpResult{FAILED, "failed", nil}
 }
