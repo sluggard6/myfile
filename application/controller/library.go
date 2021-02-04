@@ -34,3 +34,18 @@ func (c *LibraryController) Get(ctx iris.Context) HttpResult {
 		return FailedCode(PARAM_ERROR)
 	}
 }
+
+func (c *LibraryController) Put(ctx iris.Context) HttpResult {
+	user := sessions.Get(ctx).Get("user").(*model.User)
+	library := &model.Library{}
+	ctx.ReadJSON(library)
+	if user.HasLibraryName(library.Name) {
+		return FailedMessage("重复的名称")
+	}
+	library.UserID = user.ID
+	_, err := c.libraryService.CreateLibrary(user.ID, library.Name)
+	if err != nil {
+		return FailedMessage(err.Error())
+	}
+	return Success(library)
+}

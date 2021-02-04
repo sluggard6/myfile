@@ -36,7 +36,11 @@ func (u *User) HasLibrary(libraryId uint) (bool, LibraryRole) {
 	return false, Read
 }
 
-// func (u *User) CreateUser() (int64, error) {
-// 	result := db.Create(u)
-// 	return result.RowsAffected, result.Error
-// }
+func (u *User) HasLibraryName(name string) bool {
+	for _, library := range u.Librarys {
+		if library.Name == name {
+			return true
+		}
+	}
+	return false
+}

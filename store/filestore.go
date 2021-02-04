@@ -61,8 +61,7 @@ func (fs *FileStore) SaveFile(reader io.Reader, name string) (*File, error) {
 	if err := os.MkdirAll(dir, 0744); err != nil {
 		return nil, err
 	}
-
-	os.Rename(tmpFile.Name(), fileName)
+	os.Rename(tmpFile.Name(), fs.Root+string(filepath.Separator)+fileName)
 	return &File{fileName, hexString, size}, nil
 }
 

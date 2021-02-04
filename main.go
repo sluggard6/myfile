@@ -12,9 +12,12 @@ import (
 	_ "github.com/sluggard/myfile/docs"
 )
 
-var configFile = flag.String("c", config.DefaultConfigPath, "配置路径")
+var configFile = flag.String("c", config.DefaultConfigPath, "配置文件路径")
 var version = flag.Bool("v", false, "打印版本号")
-var Version = "0.0.1"
+var active = flag.String("active", "", "环境信息")
+
+//Version 程序版本号
+const Version = "0.0.1"
 
 func main() {
 	log.SetLevel(logrus.TraceLevel)
