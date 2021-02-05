@@ -52,10 +52,10 @@ func (s *folderSer) CheckFileName(folder *model.Folder, name string) error {
 }
 
 func (s *folderSer) DeleteByLibrary(libraryID uint) error {
-	var folders []model.Folder
+	var folders *[]model.Folder = &[]model.Folder{}
 	model.DB().Where("library_id=?", libraryID).Find(folders)
-	folderIDs := make([]uint, len(folders))
-	for i, folder := range folders {
+	folderIDs := make([]uint, len(*folders))
+	for i, folder := range *folders {
 		folderIDs[i] = folder.ID
 	}
 	model.DB().Where("folder_id in ?", folderIDs).Delete(&model.File{})

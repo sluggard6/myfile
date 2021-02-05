@@ -47,6 +47,7 @@ func (c *LibraryController) Put(ctx iris.Context) HttpResult {
 	if err != nil {
 		return FailedMessage(err.Error())
 	}
+	user.Librarys = append(user.Librarys, *library)
 	return Success(library)
 }
 
