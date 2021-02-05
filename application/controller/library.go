@@ -65,9 +65,9 @@ func (c *LibraryController) DeleteBy(id uint, ctx iris.Context) HttpResult {
 	if b, _ := user.HasLibrary(id); !b {
 		return FailedForbidden(ctx)
 	}
-	i, err := c.libraryService.DeleteLibrary(id)
+	err := c.libraryService.DeleteLibrary(id)
 	if err != nil {
 		return FailedMessage(err.Error())
 	}
-	return Success(i)
+	return Success(id)
 }

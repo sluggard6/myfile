@@ -55,6 +55,7 @@ func (c *UserController) GetBy(id uint) HttpResult {
 		return Success(user)
 	}
 }
+
 func (c *UserController) PostRegister(ctx iris.Context) HttpResult {
 	user := &model.User{}
 	if err := ctx.ReadJSON(user); err != nil {

@@ -11,7 +11,7 @@ type LibraryService interface {
 	CreateLibrary(userId uint, name string) (*model.Library, error)
 	GetLibraryMine(userId uint) ([]model.Library, error)
 	GetLibraryShare(userId uint) ([]model.ShareLibrary, error)
-	DeleteLibrary(id uint) (int64, error)
+	DeleteLibrary(id uint) error
 }
 
 var libraryService = &librarySer{}
@@ -81,6 +81,9 @@ func (s *librarySer) ShareLibraryOne(libraryID uint, userID uint) error {
 	return err
 }
 
-func (s *librarySer) DeleteLibrary(id uint) (int64, error) {
-	return 0, nil
+func (s *librarySer) DeleteLibrary(id uint) error {
+	library := &model.Library{Model: model.Model{ID: id}}
+	folderService.DeleteByLibrary(id)
+	model.Delete(library)
+	return nil
 }

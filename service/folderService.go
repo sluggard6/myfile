@@ -11,7 +11,8 @@ type FolderService interface {
 	GetChildrenFolder(folderID uint) (*[]model.Folder, error)
 	GetChildrenFile(folderID uint) (*[]model.File, error)
 	CreateChild(parent *model.Folder, name string) (*model.Folder, error)
-	checkFileName(folder *model.Folder, name string) error
+	CheckFileName(folder *model.Folder, name string) error
+	DeleteByLibrary(libraryID uint) error
 }
 
 type folderSer struct {
@@ -40,7 +41,7 @@ func (s *folderSer) CreateChild(parent *model.Folder, name string) (*model.Folde
 	return parent.CreateChild(name)
 }
 
-func (s *folderSer) checkFileName(folder *model.Folder, name string) error {
+func (s *folderSer) CheckFileName(folder *model.Folder, name string) error {
 	files, err := s.GetChildrenFile(folder.ID)
 	for _, v := range *files {
 		if v.Name == name {
@@ -48,4 +49,16 @@ func (s *folderSer) checkFileName(folder *model.Folder, name string) error {
 		}
 	}
 	return err
+}
+
+func (s *folderSer) DeleteByLibrary(libraryID uint) error {
+	var folders []model.Folder
+	model.DB().Where("library_id=?", libraryID).Find(folders)
+	folderIDs := make([]uint, len(folders))
+	for i, folder := range folders {
+		folderIDs[i] = folder.ID
+	}
+	model.DB().Where("folder_id in ?", folderIDs).Delete(&model.File{})
+	model.DB().Where("library_id = ?", libraryID).Delete(&model.Folder{})
+	return nil
 }

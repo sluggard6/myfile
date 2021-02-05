@@ -44,6 +44,10 @@ type Model struct {
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"deleteAt"`
 }
 
+func DB() *gorm.DB {
+	return db
+}
+
 func Create(model interface{}) (int64, error) {
 	result := db.Create(model)
 	return result.RowsAffected, result.Error
