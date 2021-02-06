@@ -5,6 +5,7 @@ import (
 
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/sessions"
+	"github.com/sirupsen/logrus"
 	"github.com/sluggard/myfile/model"
 	"github.com/sluggard/myfile/service"
 )
@@ -70,5 +71,13 @@ func (c *LibraryController) DeleteBy(id uint, ctx iris.Context) HttpResult {
 	if err != nil {
 		return FailedMessage(err.Error())
 	}
+	// 移除user中已被删除的library
+	for i, library := range user.Librarys {
+		if library.ID == id {
+			user.Librarys = append(user.Librarys[:i], user.Librarys[i+1:]...)
+			break
+		}
+	}
+	logrus.Debug(user.Librarys)
 	return Success(id)
 }
