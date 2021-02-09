@@ -65,6 +65,10 @@ func (fs *FileStore) SaveFile(reader io.Reader, name string) (*File, error) {
 	return &File{fileName, hexString, size}, nil
 }
 
+func (fs *FileStore) GetAbsPath(path string) string {
+	return fs.Root + string(filepath.Separator) + path
+}
+
 func (fs *FileStore) NewTmpFile() (*os.File, error) {
 	name := util.UUID()
 	filePath := fs.Tmp + string(filepath.Separator) + name

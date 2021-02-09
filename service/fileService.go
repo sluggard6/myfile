@@ -10,6 +10,7 @@ import (
 
 type FileService interface {
 	SaveFile(reader io.Reader, name string, folder *model.Folder) (*model.File, error)
+	GetAbsPath(file *model.File) string
 }
 
 type myFileSer struct {
@@ -46,4 +47,8 @@ func (s *myFileSer) SaveFile(reader io.Reader, name string, folder *model.Folder
 	file := &model.File{Name: name, Ext: filepath.Ext(name), FolderID: folder.ID, PolicyID: policy.ID, Size: uint64(storeFile.Size)}
 	_, err = model.Create(file)
 	return file, err
+}
+
+func (s *myFileSer) GetAbsPath(file *model.File) string {
+	return s.store.GetAbsPath(file.Policy.Path)
 }

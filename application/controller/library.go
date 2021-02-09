@@ -52,6 +52,21 @@ func (c *LibraryController) Put(ctx iris.Context) HttpResult {
 	return Success(library)
 }
 
+func (c *LibraryController) Post(ctx iris.Context) HttpResult {
+	user := sessions.Get(ctx).Get("user").(*model.User)
+	library := &model.Library{}
+	ctx.ReadJSON(library)
+	// name := ctx.URLParam("name")
+	if user.HasLibraryName(library.Name) {
+		return FailedMessage(fmt.Sprintf("资料库'%s'已存在", library.Name))
+	}
+	err := c.libraryService.UpdateLibrary(library)
+	if err != nil {
+		return FailedMessage(err.Error())
+	}
+	return Success(library)
+}
+
 func (c *LibraryController) GetCheck(ctx iris.Context) HttpResult {
 	name := ctx.URLParam("name")
 	user := sessions.Get(ctx).Get("user").(*model.User)

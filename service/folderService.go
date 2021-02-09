@@ -13,6 +13,7 @@ type FolderService interface {
 	CreateChild(parent *model.Folder, name string) (*model.Folder, error)
 	CheckFileName(folder *model.Folder, name string) error
 	DeleteByLibrary(libraryID uint) error
+	UpdateFolder(folder *model.Folder) error
 }
 
 type folderSer struct {
@@ -61,4 +62,8 @@ func (s *folderSer) DeleteByLibrary(libraryID uint) error {
 	model.DB().Where("folder_id in ?", folderIDs).Delete(&model.File{})
 	model.DB().Where("library_id = ?", libraryID).Delete(&model.Folder{})
 	return nil
+}
+
+func (s *folderSer) UpdateFolder(folder *model.Folder) error {
+	return model.DB().Save(folder).Error
 }

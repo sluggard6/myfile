@@ -6,6 +6,7 @@ import (
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/mvc"
 	"github.com/kataras/iris/v12/sessions"
+	"github.com/sirupsen/logrus"
 	"github.com/sluggard/myfile/model"
 	"github.com/sluggard/myfile/service"
 	"github.com/sluggard/myfile/store"
@@ -24,22 +25,28 @@ func (c *FileController) BeforeActivation(b mvc.BeforeActivation) {
 	b.Handle("GET", "/{id:uint}/{name:string}", "LoadFile")
 }
 
-func (c *FileController) LoadFile(ctx iris.Context, id uint, name string) *HttpResult {
+func (c *FileController) LoadFile(ctx iris.Context, id uint, name string) {
 	file := &model.File{}
 	_, err := service.GetByID(file, id)
-	if err != nil {
-		return nil
-	}
+	// if err != nil {
+	// 	return nil
+	// }
+	policy := &model.Policy{}
+	_, err = service.GetByID(policy, file.PolicyID)
+	// if err != nil {
+	// 	return nil
+	// }
+	file.Policy = policy
 	folder := &model.Folder{}
 	_, err = service.GetByID(folder, file.FolderID)
-	if err != nil {
-		return nil
-	}
+	// if err != nil {
+	// 	return nil
+	// }
 	sess := sessions.Get(ctx)
 	user := sess.Get("user")
 	if hasRole, _ := user.(*model.User).HasLibrary(folder.LibraryID); !hasRole {
-		ret := FailedForbidden(ctx)
-		return &ret
+		// ret := FailedForbidden(ctx)
+		// return &ret
 	}
 	_, err = service.GetByID(file.Policy, file.PolicyID)
 	// src, err := os.Open(file.Policy.Path)
@@ -48,8 +55,10 @@ func (c *FileController) LoadFile(ctx iris.Context, id uint, name string) *HttpR
 	// }
 	// defer src.Close()
 	// io.Copy(ctx.ResponseWriter(), src)
-	ctx.SendFile(file.Policy.Path, file.Name)
-	return nil
+	abspath := c.fileService.GetAbsPath(file)
+	logrus.Debug(abspath, err)
+	ctx.SendFile(abspath, file.Name)
+	// return nil
 }
 
 func (c *FileController) PostUpload(ctx iris.Context) HttpResult {
