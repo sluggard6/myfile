@@ -1,6 +1,9 @@
 package controller
 
 import (
+	"fmt"
+	"strconv"
+
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/sessions"
 	"github.com/sluggard/myfile/model"
@@ -43,18 +46,26 @@ func (c *FolderController) GetBy(folderID uint, ctx iris.Context) HttpResult {
 	if err != nil {
 		return FailedMessage(err.Error())
 	}
-	return Success(&Children{folders, files})
+	children := &Children{folders, files}
+	ret := struct {
+		Folder   *model.Folder `json:"folder"`
+		Children *Children     `json:"children"`
+	}{
+		folder,
+		children,
+	}
+	return Success(ret)
 }
 
-//PostBy 创建子目录
-func (c *FolderController) PostBy(folderID uint, ctx iris.Context) HttpResult {
+//PutBy 创建子目录
+func (c *FolderController) PutBy(folderID uint, ctx iris.Context) HttpResult {
 	sess := sessions.Get(ctx)
-	user := sess.Get("user")
+	user := sess.Get("user").(*model.User)
 	folder, err := service.GetByID(&model.Folder{}, folderID)
 	if err != nil {
 		return FailedMessage(err.Error())
 	}
-	if hasRole, role := user.(*model.User).HasLibrary(folder.(*model.Folder).LibraryID); !hasRole || role == model.Read {
+	if hasRole, role := user.HasLibrary(folder.(*model.Folder).LibraryID); !hasRole || role == model.Read {
 		return FailedForbidden(ctx)
 	}
 	name := ctx.URLParamDefault("name", "")
@@ -66,4 +77,22 @@ func (c *FolderController) PostBy(folderID uint, ctx iris.Context) HttpResult {
 		return FailedMessage(err.Error())
 	}
 	return Success(child)
+}
+
+func (c *FolderController) GetCheck(ctx iris.Context) HttpResult {
+	name := ctx.URLParam("name")
+	parentID, err := strconv.Atoi(ctx.URLParam("id"))
+	if err != nil {
+		return FailedMessage(err.Error())
+	}
+	folders, err := c.folderService.GetChildrenFolder(uint(parentID))
+	if err != nil {
+		return FailedMessage(err.Error())
+	}
+	for _, folder := range *folders {
+		if name == folder.Name {
+			return SuccessMessage(fmt.Sprintf("文件夹'%s'已存在", name), false)
+		}
+	}
+	return Success(true)
 }

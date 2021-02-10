@@ -57,7 +57,7 @@ func (fs *FileStore) SaveFile(reader io.Reader, name string) (*File, error) {
 	// var fileName = fs.Root + string(filepath.Separator) + strings.Join(makeFilePath(hexString), string(filepath.Separator)) + filepath.Ext(name)
 	var fileName = strings.Join(makeFilePath(hexString), string(filepath.Separator)) + filepath.Ext(name)
 	logrus.Debugf("store file : %s", fileName)
-	dir, name := filepath.Split(fileName)
+	dir, name := filepath.Split(fs.Root + string(filepath.Separator) + fileName)
 	if err := os.MkdirAll(dir, 0744); err != nil {
 		return nil, err
 	}

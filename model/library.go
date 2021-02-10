@@ -24,7 +24,7 @@ type ShareLibrary struct {
 }
 
 func (l *Library) GetLibraryMine(userId uint) (librarys []Library, err error) {
-	err = db.Where("user_id=?", userId).Preload("RootFolder").Find(&librarys).Error
+	err = db.Where("user_id=?", userId).Preload("RootFolder", "parent_id=?", 0).Find(&librarys).Error
 	return
 }
 
