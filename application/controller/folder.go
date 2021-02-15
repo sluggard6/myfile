@@ -27,7 +27,7 @@ type Children struct {
 }
 
 //GetBy 获取目录内搜有内容
-func (c *FolderController) GetBy(folderID uint, ctx iris.Context) HttpResult {
+func (c *FolderController) GetBy(folderID uint, ctx iris.Context) *HttpResult {
 	folder := &model.Folder{}
 	model.GetById(folder, folderID)
 	sess := sessions.Get(ctx)
@@ -58,7 +58,7 @@ func (c *FolderController) GetBy(folderID uint, ctx iris.Context) HttpResult {
 }
 
 //PutBy 创建子目录
-func (c *FolderController) PutBy(folderID uint, ctx iris.Context) HttpResult {
+func (c *FolderController) PutBy(folderID uint, ctx iris.Context) *HttpResult {
 	sess := sessions.Get(ctx)
 	user := sess.Get("user").(*model.User)
 	folder, err := service.GetByID(&model.Folder{}, folderID)
@@ -79,7 +79,8 @@ func (c *FolderController) PutBy(folderID uint, ctx iris.Context) HttpResult {
 	return Success(child)
 }
 
-func (c *FolderController) GetCheck(ctx iris.Context) HttpResult {
+// GetCheck 检测资料库是否重名
+func (c *FolderController) GetCheck(ctx iris.Context) *HttpResult {
 	name := ctx.URLParam("name")
 	parentID, err := strconv.Atoi(ctx.URLParam("id"))
 	if err != nil {

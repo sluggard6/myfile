@@ -26,7 +26,7 @@ type LoginInfo struct {
 	Token string      `json:"token"`
 }
 
-func (c *UserController) PostLogin(ctx iris.Context) HttpResult {
+func (c *UserController) PostLogin(ctx iris.Context) *HttpResult {
 	loginForm := &LoginForm{}
 	if err := ctx.ReadJSON(loginForm); err != nil {
 		ctx.StatusCode(iris.StatusBadRequest)
@@ -42,12 +42,12 @@ func (c *UserController) PostLogin(ctx iris.Context) HttpResult {
 	}
 }
 
-func (c *UserController) GetInfo(ctx iris.Context) HttpResult {
+func (c *UserController) GetInfo(ctx iris.Context) *HttpResult {
 	session := sessions.Get(ctx)
 	return c.GetBy(session.Get("user").(*model.User).ID)
 }
 
-func (c *UserController) GetBy(id uint) HttpResult {
+func (c *UserController) GetBy(id uint) *HttpResult {
 	if user, err := c.userService.GetById(id); err != nil {
 		return Failed()
 	} else {
@@ -56,7 +56,7 @@ func (c *UserController) GetBy(id uint) HttpResult {
 	}
 }
 
-func (c *UserController) PostRegister(ctx iris.Context) HttpResult {
+func (c *UserController) PostRegister(ctx iris.Context) *HttpResult {
 	user := &model.User{}
 	if err := ctx.ReadJSON(user); err != nil {
 		return FailedCode(PARAM_ERROR)
@@ -78,6 +78,16 @@ func (c *UserController) PostRegister(ctx iris.Context) HttpResult {
 	return Success(user)
 }
 
-func (c *UserController) GetTest(ctx iris.Context) HttpResult {
+func (c *UserController) GetLike(ctx iris.Context) *HttpResult {
+	user := sessions.Get(ctx).Get("user").(*model.User)
+	queryString := ctx.URLParam("queryString")
+	s := make([]model.User, 0)
+	result := &s
+	model.DB().Table("users").Select("id", "username").Where("username like ? AND id <> ? AND `users`.`deleted_at` IS NULL", "%"+queryString+"%", user.ID).Scan(result)
+	// model.DB().Where("username like ? AND id <> ?", "%"+queryString+"%", user.ID).Find(result)
+	return Success(result)
+}
+
+func (c *UserController) GetTest(ctx iris.Context) *HttpResult {
 	return Success("test success")
 }

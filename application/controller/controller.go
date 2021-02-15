@@ -30,33 +30,33 @@ var failedMessage map[MessageCode]string = map[MessageCode]string{
 	LOGIN_FAILED: "login_failed",
 }
 
-func Success(data interface{}) HttpResult {
-	return HttpResult{SUCCESS, "success", data}
+func Success(data interface{}) *HttpResult {
+	return &HttpResult{SUCCESS, "success", data}
 }
 
-func SuccessMessage(message string, data interface{}) HttpResult {
-	return HttpResult{SUCCESS, message, data}
+func SuccessMessage(message string, data interface{}) *HttpResult {
+	return &HttpResult{SUCCESS, message, data}
 }
 
-func Failed() HttpResult {
-	return HttpResult{FAILED, "failed", nil}
+func Failed() *HttpResult {
+	return &HttpResult{FAILED, "failed", nil}
 }
 
-func FailedMessage(message string) HttpResult {
-	return HttpResult{FAILED, message, nil}
+func FailedMessage(message string) *HttpResult {
+	return &HttpResult{FAILED, message, nil}
 }
 
-func FailedCode(code MessageCode) HttpResult {
-	return HttpResult{code, failedMessage[code], nil}
+func FailedCode(code MessageCode) *HttpResult {
+	return &HttpResult{code, failedMessage[code], nil}
 }
 
-func FailedCodeMessage(code MessageCode, message string) HttpResult {
-	return HttpResult{Code: code, Message: message, Data: nil}
+func FailedCodeMessage(code MessageCode, message string) *HttpResult {
+	return &HttpResult{Code: code, Message: message, Data: nil}
 }
 
-func FailedForbidden(ctx iris.Context) HttpResult {
+func FailedForbidden(ctx iris.Context) *HttpResult {
 	ctx.StatusCode(iris.StatusForbidden)
-	return HttpResult{Code: 401, Message: "forbidden"}
+	return &HttpResult{Code: 401, Message: "forbidden"}
 }
 func Cors(ctx iris.Context) {
 	ctx.Header("Access-Control-Allow-Origin", "http://localhost:9528")

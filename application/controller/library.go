@@ -18,7 +18,7 @@ func NewLibraryController() *LibraryController {
 	return &LibraryController{service.NewLibraryService()}
 }
 
-func (c *LibraryController) Get(ctx iris.Context) HttpResult {
+func (c *LibraryController) Get(ctx iris.Context) *HttpResult {
 	user := sessions.Get(ctx).Get("user").(*model.User)
 	lTpye := ctx.URLParamDefault("type", "mine")
 	if "mine" == lTpye {
@@ -38,7 +38,7 @@ func (c *LibraryController) Get(ctx iris.Context) HttpResult {
 	}
 }
 
-func (c *LibraryController) Put(ctx iris.Context) HttpResult {
+func (c *LibraryController) Put(ctx iris.Context) *HttpResult {
 	user := sessions.Get(ctx).Get("user").(*model.User)
 	name := ctx.URLParam("name")
 	if user.HasLibraryName(name) {
@@ -52,7 +52,7 @@ func (c *LibraryController) Put(ctx iris.Context) HttpResult {
 	return Success(library)
 }
 
-func (c *LibraryController) Post(ctx iris.Context) HttpResult {
+func (c *LibraryController) Post(ctx iris.Context) *HttpResult {
 	user := sessions.Get(ctx).Get("user").(*model.User)
 	library := &model.Library{}
 	ctx.ReadJSON(library)
@@ -67,7 +67,7 @@ func (c *LibraryController) Post(ctx iris.Context) HttpResult {
 	return Success(library)
 }
 
-func (c *LibraryController) GetCheck(ctx iris.Context) HttpResult {
+func (c *LibraryController) GetCheck(ctx iris.Context) *HttpResult {
 	name := ctx.URLParam("name")
 	user := sessions.Get(ctx).Get("user").(*model.User)
 	if user.HasLibraryName(name) {
@@ -77,7 +77,7 @@ func (c *LibraryController) GetCheck(ctx iris.Context) HttpResult {
 	}
 }
 
-func (c *LibraryController) DeleteBy(id uint, ctx iris.Context) HttpResult {
+func (c *LibraryController) DeleteBy(id uint, ctx iris.Context) *HttpResult {
 	user := sessions.Get(ctx).Get("user").(*model.User)
 	if b, _ := user.HasLibrary(id); !b {
 		return FailedForbidden(ctx)

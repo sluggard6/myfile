@@ -10,6 +10,10 @@ POST {{host}}/user/register
 
 {"username":"test","password":"111111"}
 
+###userLike
+GET {{host}}/user/like?queryString=a
+
+
 ###upload
 POST {{host}}/file/upload?folderId=4 HTTP/1.1
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryL3uJ3c0mfMKL94BR
