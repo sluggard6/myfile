@@ -106,8 +106,9 @@ func (s *HttpServer) _Init() error {
 	return nil
 }
 
+// AuthRequired 登录验证
 func AuthRequired(ctx iris.Context) {
-	log.Debug(ctx.Request().RequestURI)
+	log.Debug(ctx.Request().Method, ctx.Request().RequestURI)
 	//被忽略的url直接通过
 	for _, v := range ignoreAuthUrl {
 		if v == ctx.RequestPath(false) {
@@ -117,12 +118,11 @@ func AuthRequired(ctx iris.Context) {
 	if auth, _ := sess.Start(ctx).GetBoolean("authenticated"); !auth {
 		ctx.StatusCode(iris.StatusForbidden)
 		return
-	} else {
-		ctx.Next()
 	}
+	ctx.Next()
 }
 
-// RouteInit
+// RouteInit 初始化路由
 func (s *HttpServer) RouteInit() {
 
 	app := s.App

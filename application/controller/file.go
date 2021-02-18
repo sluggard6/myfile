@@ -74,6 +74,9 @@ func (c *FileController) PostUpload(ctx iris.Context) *HttpResult {
 	if err != nil {
 		return FailedCode(PARAM_ERROR)
 	}
+	logrus.Debugln(file)
+	logrus.Debugln(fileHeader)
+	logrus.Debugln(folderID)
 	model.GetById(folder, uint(folderID))
 	sess := sessions.Get(ctx)
 	user := sess.Get("user")
