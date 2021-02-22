@@ -89,3 +89,8 @@ func (c *FileController) PostUpload(ctx iris.Context) *HttpResult {
 	}
 	return Success(dbFile)
 }
+
+//PostUploadFolder 上传文件夹
+func (c *FileController) PostUploadFolder(ctx iris.Context) *HttpResult {
+	return nil
+}

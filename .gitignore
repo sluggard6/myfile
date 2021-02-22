@@ -19,7 +19,6 @@
 myfile*
 
 .vscode
-workspace.code-workspace
 
 application.json
 application.yml

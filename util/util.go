@@ -18,11 +18,17 @@ func ShaString(s string) string {
 	return fmt.Sprintf("%x", hash[:])
 }
 func ShaReader(reader io.Reader) ([]byte, int64, error) {
-	return SaveAndSha(reader, nil)
+	return SaveAndSha(reader, "")
 }
 
-func SaveAndSha(reader io.Reader, file *os.File) ([]byte, int64, error) {
-	if file != nil {
+func SaveAndSha(reader io.Reader, dist string) ([]byte, int64, error) {
+	var file *os.File
+	var err error
+	if dist != "" {
+		file, err = os.Create(dist)
+		if err != nil {
+			return nil, 0, err
+		}
 		defer file.Close()
 	}
 	hash := sha256.New()
@@ -33,11 +39,10 @@ func SaveAndSha(reader io.Reader, file *os.File) ([]byte, int64, error) {
 		if err != nil {
 			if err != io.EOF {
 				return nil, size, err
-			} else {
-				break
 			}
+			break
 		}
-		if file != nil {
+		if dist != "" {
 			file.Write(block[:i])
 		}
 		hash.Write(block[:i])

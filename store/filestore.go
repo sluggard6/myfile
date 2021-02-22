@@ -42,10 +42,7 @@ func New(root string) (*FileStore, error) {
 }
 
 func (fs *FileStore) SaveFile(reader io.Reader, name string) (*File, error) {
-	tmpFile, err := fs.NewTmpFile()
-	if err != nil {
-		return nil, err
-	}
+	tmpFile := fs.newTmpFile()
 	sha, size, err := util.SaveAndSha(reader, tmpFile)
 	if err != nil {
 		return nil, err
@@ -61,7 +58,7 @@ func (fs *FileStore) SaveFile(reader io.Reader, name string) (*File, error) {
 	if err := os.MkdirAll(dir, 0744); err != nil {
 		return nil, err
 	}
-	os.Rename(tmpFile.Name(), fs.Root+string(filepath.Separator)+fileName)
+	os.Rename(tmpFile, fs.Root+string(filepath.Separator)+fileName)
 	return &File{fileName, hexString, size}, nil
 }
 
@@ -69,10 +66,10 @@ func (fs *FileStore) GetAbsPath(path string) string {
 	return fs.Root + string(filepath.Separator) + path
 }
 
-func (fs *FileStore) NewTmpFile() (*os.File, error) {
+func (fs *FileStore) newTmpFile() (filePath string) {
 	name := util.UUID()
-	filePath := fs.Tmp + string(filepath.Separator) + name
-	return os.Create(filePath)
+	filePath = fs.Tmp + string(filepath.Separator) + name
+	return
 }
 
 func makeFilePath(sha string) (path []string) {
