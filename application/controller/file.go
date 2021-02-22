@@ -92,5 +92,8 @@ func (c *FileController) PostUpload(ctx iris.Context) *HttpResult {
 
 //PostUploadFolder 上传文件夹
 func (c *FileController) PostUploadFolder(ctx iris.Context) *HttpResult {
+	if err := ctx.Request().ParseMultipartForm(ctx.Application().ConfigurationReadOnly().GetPostMaxMemory()); err != nil {
+		return FailedMessage(err.Error())
+	}
 	return nil
 }
