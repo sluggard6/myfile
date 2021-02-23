@@ -96,3 +96,7 @@ func (c *LibraryController) DeleteBy(id uint, ctx iris.Context) *HttpResult {
 	logrus.Debug(user.Librarys)
 	return Success(id)
 }
+
+func (c *LibraryController) PutShare() *HttpResult {
+	return nil
+}

@@ -15,13 +15,14 @@ var db *gorm.DB
 
 var cfg config.Database
 
+// Init 初始化数据库
 func Init() error {
 	cfg = config.GetConfig().Database
 	log.Debug(fmt.Sprintf("%s:%s@%s", cfg.Username, cfg.Password, cfg.Url))
 	dsn := fmt.Sprintf("%s:%s@%s", cfg.Username, cfg.Password, cfg.Url)
 	// dsn := "user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local"
-	var err error
-	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{DisableForeignKeyConstraintWhenMigrating: true, Logger: logger.Default.LogMode(logger.Info)})
+	// var err error
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{DisableForeignKeyConstraintWhenMigrating: true, Logger: logger.Default.LogMode(logger.Info)})
 	// db, err := gorm.Open(sqlite.Open("myfile.db"), &gorm.Config{})
 	// db.Logger.LogMode(logger.Info)
 	if err != nil {

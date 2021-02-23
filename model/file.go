@@ -35,6 +35,7 @@ func (file *File) GetFilesByFolderID() (files *[]File, err error) {
 	return
 }
 
+// CheckOrCreat 检查文件是否存在，如果不存在就创建文件
 func (policy *Policy) CheckOrCreat() (err error) {
 	if err = db.Where("sha=?", policy.Sha).Find(policy).Error; err != nil {
 		return
