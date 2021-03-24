@@ -22,14 +22,14 @@ func Init() error {
 	dsn := fmt.Sprintf("%s:%s@%s", cfg.Username, cfg.Password, cfg.Url)
 	// dsn := "user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local"
 	// var err error
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{DisableForeignKeyConstraintWhenMigrating: true, Logger: logger.Default.LogMode(logger.Info)})
+	gdb, err := gorm.Open(mysql.Open(dsn), &gorm.Config{DisableForeignKeyConstraintWhenMigrating: true, Logger: logger.Default.LogMode(logger.Info)})
 	// db, err := gorm.Open(sqlite.Open("myfile.db"), &gorm.Config{})
 	// db.Logger.LogMode(logger.Info)
 	if err != nil {
 		log.Error(err)
 		return err
 	}
-	sqlDb, err := db.DB()
+	sqlDb, err := gdb.DB()
 	if err != nil {
 		log.Error(err)
 		return err
@@ -44,6 +44,7 @@ func Init() error {
 	sqlDb.SetConnMaxLifetime(time.Hour)
 
 	// DB = db
+	db = gdb
 	initTable()
 	return nil
 }
