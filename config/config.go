@@ -53,7 +53,7 @@ func New(config string) Config {
 func LoadConfing(path string) Config {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
-		fmt.Println("unable to decode into struct, %v", err)
+		fmt.Printf("unable to decode into struct, %v", err)
 		// panci(err)
 		// return nil, err
 	}

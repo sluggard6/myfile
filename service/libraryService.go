@@ -43,6 +43,7 @@ func (s *librarySer) CreateLibrary(userID uint, name string) (*model.Library, er
 	if _, err := model.Create(folder); err != nil {
 		return nil, err
 	}
+	library.RootFolder = *folder
 	return library, nil
 }
 func (s *librarySer) GetLibraryMine(userID uint) ([]model.Library, error) {

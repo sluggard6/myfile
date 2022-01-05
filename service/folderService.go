@@ -8,6 +8,7 @@ import (
 
 //FolderService 文件夹服务
 type FolderService interface {
+	// GetTree(folderId uint) (*[]model.Folder, error)
 	GetChildrenFolder(folderID uint) (*[]model.Folder, error)
 	GetChildrenFile(folderID uint) (*[]model.File, error)
 	CreateChild(parent *model.Folder, name string) (*model.Folder, error)
@@ -25,6 +26,12 @@ var folderService = &folderSer{}
 func NewFolderService() FolderService {
 	return folderService
 }
+
+// func (s *folderSer) GetTree(folderID uint) (*[]model.Folder, error) {
+// folder := &model.Folder{Model: model.Model{ID: folderID}}
+// for !folder.IsRoot()
+// return
+// }
 
 func (s *folderSer) GetChildrenFolder(folderID uint) (*[]model.Folder, error) {
 	folder := &model.Folder{Model: model.Model{ID: folderID}}

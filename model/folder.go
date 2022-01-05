@@ -13,6 +13,21 @@ type Folder struct {
 	LibraryID uint
 }
 
+//PolicyType 策略类型
+type PathType string
+
+const (
+	//MyFile 自带的文件存储方案
+	FolderType  PathType = "folder"
+	LibraryType PathType = "library"
+)
+
+type PathItem struct {
+	Name string   `json:"name"`
+	ID   uint     `json:"id"`
+	Type PathType `json:"type"`
+}
+
 func (f *Folder) IsRoot() bool {
 	return f.ParentID == 0
 }
@@ -34,21 +49,24 @@ func (f *Folder) GetParent() (parent *Folder, err error) {
 		err = common.CommonError{Message: "root folder has not Parent"}
 		return
 	}
-	err = db.Where("id=?", f.ParentID).Find(parent).Error
+	parent = &Folder{}
+	GetById(parent, f.ParentID)
 	return
 }
 
-func (f *Folder) GetPath() (path []Folder, err error) {
+func (f *Folder) GetPath() (path []PathItem, err error) {
 	var appendFolder = func(folder *Folder) {
-		path = append(path, *folder)
-		logrus.Debug("path:%d:{id:%s,parent:%s}\n", len(path), folder.ID, folder.ParentID)
-		return
+		path = append(path, PathItem{ID: folder.ID, Name: folder.Name, Type: FolderType})
 	}
 	tp := f
 	for !tp.IsRoot() {
 		defer appendFolder(tp)
-		tp, _ = tp.GetParent()
+		tp, err = tp.GetParent()
+		if err != nil {
+			logrus.Debug(err)
+		}
 	}
+	path = append(path, PathItem{ID: tp.ID, Name: tp.Name, Type: FolderType})
 	return
 }
 

@@ -21,19 +21,19 @@ func (u *User) GetUserById(id uint) (*User, error) {
 	return user, result.Error
 }
 
-func (u *User) HasLibrary(libraryId uint) (bool, LibraryRole) {
+func (u *User) HasLibrary(libraryId uint) (bool, LibraryRole, string) {
 	// db.Joins("Librarys").Joins("ShareLibrarys").Find(u, u.ID)
 	for _, library := range u.Librarys {
 		if library.ID == libraryId {
-			return true, Write
+			return true, Write, library.Name
 		}
 	}
 	for _, shareLibrary := range u.ShareLibrarys {
 		if shareLibrary.LibraryID == libraryId {
-			return true, shareLibrary.Role
+			return true, shareLibrary.Role, shareLibrary.Library.Name
 		}
 	}
-	return false, Read
+	return false, Read, ""
 }
 
 func (u *User) HasLibraryName(name string) bool {

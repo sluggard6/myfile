@@ -26,17 +26,20 @@ type Children struct {
 	Files   *[]model.File   `json:"files"`
 }
 
-//GetBy 获取目录内搜有内容
+//GetBy 获取目录内所有内容
 func (c *FolderController) GetBy(folderID uint, ctx iris.Context) *HttpResult {
 	folder := &model.Folder{}
 	model.GetById(folder, folderID)
 	sess := sessions.Get(ctx)
 	user := sess.Get("user")
-	if hasRole, _ := user.(*model.User).HasLibrary(folder.LibraryID); !hasRole {
+	var libraryName string
+	var hasRole bool
+	if hasRole, _, libraryName = user.(*model.User).HasLibrary(folder.LibraryID); !hasRole {
 		return FailedForbidden(ctx)
 	}
 	var folders *[]model.Folder
 	var files *[]model.File
+	var path []model.PathItem
 	var err error
 	folders, err = c.folderService.GetChildrenFolder(folderID)
 	if err != nil {
@@ -47,12 +50,20 @@ func (c *FolderController) GetBy(folderID uint, ctx iris.Context) *HttpResult {
 		return FailedMessage(err.Error())
 	}
 	children := &Children{folders, files}
+	path, err = folder.GetPath()
+	if err != nil {
+		return FailedMessage(err.Error())
+	}
 	ret := struct {
-		Folder   *model.Folder `json:"folder"`
-		Children *Children     `json:"children"`
+		Folder      *model.Folder    `json:"folder"`
+		Children    *Children        `json:"children"`
+		Path        []model.PathItem `json:"path"`
+		LibraryName string           `json:"libraryName"`
 	}{
 		folder,
 		children,
+		path,
+		libraryName,
 	}
 	return Success(ret)
 }
@@ -65,7 +76,7 @@ func (c *FolderController) PutBy(folderID uint, ctx iris.Context) *HttpResult {
 	if err != nil {
 		return FailedMessage(err.Error())
 	}
-	if hasRole, role := user.HasLibrary(folder.(*model.Folder).LibraryID); !hasRole || role == model.Read {
+	if hasRole, role, _ := user.HasLibrary(folder.(*model.Folder).LibraryID); !hasRole || role == model.Read {
 		return FailedForbidden(ctx)
 	}
 	name := ctx.URLParamDefault("name", "")

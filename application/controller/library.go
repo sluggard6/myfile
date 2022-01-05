@@ -79,7 +79,7 @@ func (c *LibraryController) GetCheck(ctx iris.Context) *HttpResult {
 
 func (c *LibraryController) DeleteBy(id uint, ctx iris.Context) *HttpResult {
 	user := sessions.Get(ctx).Get("user").(*model.User)
-	if b, _ := user.HasLibrary(id); !b {
+	if b, _, _ := user.HasLibrary(id); !b {
 		return FailedForbidden(ctx)
 	}
 	err := c.libraryService.DeleteLibrary(id)

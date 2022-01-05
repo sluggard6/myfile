@@ -47,7 +47,7 @@ func (c *FileController) LoadFile(ctx iris.Context, id uint, name string) *HttpR
 	}
 	sess := sessions.Get(ctx)
 	user := sess.Get("user")
-	if hasRole, _ := user.(*model.User).HasLibrary(folder.LibraryID); !hasRole {
+	if hasRole, _, _ := user.(*model.User).HasLibrary(folder.LibraryID); !hasRole {
 		return FailedForbidden(ctx)
 	}
 	_, err = service.GetByID(file.Policy, file.PolicyID)
@@ -80,7 +80,7 @@ func (c *FileController) PostUpload(ctx iris.Context) *HttpResult {
 	model.GetById(folder, uint(folderID))
 	sess := sessions.Get(ctx)
 	user := sess.Get("user")
-	if hasRole, role := user.(*model.User).HasLibrary(folder.LibraryID); !hasRole || role == model.Read {
+	if hasRole, role, _ := user.(*model.User).HasLibrary(folder.LibraryID); !hasRole || role == model.Read {
 		return FailedForbidden(ctx)
 	}
 	dbFile, err := c.fileService.SaveFile(file, fileHeader.Filename, folder)
