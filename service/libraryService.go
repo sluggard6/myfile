@@ -43,6 +43,8 @@ func (s *librarySer) CreateLibrary(userID uint, name string) (*model.Library, er
 	if _, err := model.Create(folder); err != nil {
 		return nil, err
 	}
+	folder.ParentID = folder.ID
+	model.UpdateById(folder)
 	library.RootFolder = *folder
 	return library, nil
 }

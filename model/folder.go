@@ -8,8 +8,8 @@ import (
 //Folder 文件夹
 type Folder struct {
 	Model
-	Name      string `json:"name"`
-	ParentID  uint
+	Name      string `json:"name" gorm:"uniqueIndex:un_pid_name;size:255"`
+	ParentID  uint   `gorm:"uniqueIndex:un_pid_name"`
 	LibraryID uint
 }
 
@@ -29,12 +29,12 @@ type PathItem struct {
 }
 
 func (f *Folder) IsRoot() bool {
-	return f.ParentID == 0
+	return f.ParentID == f.ID
 }
 
 func (f *Folder) GetChildren() (subFolders *[]Folder, err error) {
 	subFolders = &[]Folder{}
-	err = db.Where("parent_id=?", f.ID).Find(subFolders).Error
+	err = db.Where("parent_id=? and parent_id<>id", f.ID).Find(subFolders).Error
 	return
 }
 
