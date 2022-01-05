@@ -1,4 +1,4 @@
-             @host = http://localhost:5678
+@host = http://localhost:5678
 
 ###login
 POST {{host}}/user/login
