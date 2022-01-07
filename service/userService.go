@@ -14,6 +14,7 @@ type UserService interface {
 	Login(username string, password string) (*model.User, error)
 	Register(user *model.User) error
 	GetById(id uint) (*model.User, error)
+	ResetPassword(userId uint, oldpass string, newpass string) (bool, error)
 }
 
 var userService = &userSer{}
@@ -53,6 +54,18 @@ func (s *userSer) Register(user *model.User) error {
 
 func (s *userSer) GetById(id uint) (user *model.User, err error) {
 	return user.GetUserById(id)
+}
+
+func (s *userSer) ResetPassword(userId uint, oldpass string, newpass string) (bool, error) {
+	user, _ := s.GetById(userId)
+	if checkPassword(user, oldpass) {
+		user.Password = buildPassword(newpass, user.Salt)
+		if _, err := model.UpdateById(user); err != nil {
+			return false, err
+		}
+		return true, nil
+	}
+	return false, nil
 }
 
 func checkLibraryName(name string) error {

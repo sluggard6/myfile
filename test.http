@@ -5,6 +5,11 @@ POST {{host}}/user/login
 
 {"username":"admin","password":"111111"}
 
+###resetPassword
+POST {{host}}/user/resetpass
+
+{"oldpass":"111111","newpass":"111111"}
+
 ###register
 POST {{host}}/user/register
 

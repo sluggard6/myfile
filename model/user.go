@@ -5,6 +5,7 @@ type User struct {
 	Username      string         `gorm:"unique_index:idx_only_one;commit:'用户名'" validate:"required" json:"username"`
 	Password      string         `gorm:"not null;commit:'用户密码'" validate:"required" json:"password"`
 	Salt          string         `grom:"not null;commit:'用户掩码'" json:"-"`
+	Admin         bool           `gorm:"not null;commit:'是否是管理员'"`
 	Librarys      []Library      `gorm:"foreignKey:UserID" json:"librarys"`
 	ShareLibrarys []ShareLibrary `gorm:"foreignKey:UserID" json:"shareLibrarys"`
 }

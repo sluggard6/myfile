@@ -21,6 +21,12 @@ type LoginForm struct {
 	Password string `json:"password" validate:"required"`
 }
 
+type ResetPassForm struct {
+	Userid  uint   `json:"userid"`
+	Oldpass string `json:"oldpass"`
+	Newpass string `json:"newpass" validate:"required"`
+}
+
 type LoginInfo struct {
 	User  *model.User `json:"user"`
 	Token string      `json:"token"`
@@ -86,6 +92,26 @@ func (c *UserController) GetLike(ctx iris.Context) *HttpResult {
 	model.DB().Table("users").Select("id", "username").Where("username like ? AND id <> ? AND `users`.`deleted_at` IS NULL", "%"+queryString+"%", user.ID).Scan(result)
 	// model.DB().Where("username like ? AND id <> ?", "%"+queryString+"%", user.ID).Find(result)
 	return Success(result)
+}
+
+func (c *UserController) PostResetpass(ctx iris.Context) *HttpResult {
+	user := sessions.Get(ctx).Get("user").(*model.User)
+	resetPassForm := &ResetPassForm{}
+	if err := ctx.ReadJSON(resetPassForm); err != nil {
+		ctx.StatusCode(iris.StatusBadRequest)
+		return FailedCode(PARAM_ERROR)
+	}
+	res, err := c.userService.ResetPassword(user.ID, resetPassForm.Oldpass, resetPassForm.Newpass)
+	if res {
+		return Success("success")
+	} else {
+		if err == nil {
+			return FailedMessage("password wrong")
+		} else {
+			return FailedMessage(err.Error())
+		}
+
+	}
 }
 
 func (c *UserController) GetTest(ctx iris.Context) *HttpResult {
