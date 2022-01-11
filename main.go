@@ -12,8 +12,8 @@ import (
 )
 
 var (
-	configFile = flag.String("c", config.DefaultConfigPath, "设置项目配置文件路径`<path>`，可选")
-	version    = flag.Bool("v", false, "打印版本号")
+	configFile = flag.String("c", config.DefaultConfigPath, "设置项目配置文件地址`<path>`，可选")
+	version    = flag.Bool("v", false, "打印版本号并退出")
 	command    string
 )
 
@@ -23,7 +23,7 @@ const Version = "0.0.4"
 func main() {
 	log.SetLevel(log.TraceLevel)
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "usage: %s [options] [command]\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "usage: %s [-options] [command]\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "Commands:\n")
 		fmt.Fprintf(os.Stderr, "  start 启动项目\n")
 		fmt.Fprintf(os.Stderr, "Options:\n")
@@ -36,12 +36,15 @@ func main() {
 	}
 	flag.Parse()
 
+	log.Debugln(os.Args)
+
 	if (os.Args[len(os.Args)-1])[0] != '-' {
 		command = os.Args[len(os.Args)-1]
 	}
 
 	if *version {
 		fmt.Println(fmt.Sprintf("版本号：%s", Version))
+		return
 	}
 
 	switch command {

@@ -39,7 +39,21 @@ const (
 	Json              fileType = "json"
 )
 
-var config Config
+var config Config = Config{
+	Server: Server{
+		Host: "127.0.0.1",
+		Port: 5678,
+	},
+	Database: Database{
+		Type:     Sqlite,
+		Url:      "myfile.db",
+		Username: "",
+		Password: "",
+	},
+	Stroe: Store{
+		DataRoot: "file-data",
+	},
+}
 
 func GetConfig() *Config {
 	return &config
