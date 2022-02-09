@@ -12,7 +12,8 @@ type FolderService interface {
 	GetChildrenFolder(folderID uint) (*[]model.Folder, error)
 	GetChildrenFile(folderID uint) (*[]model.File, error)
 	CreateChild(parent *model.Folder, name string) (*model.Folder, error)
-	CheckFileName(folder *model.Folder, name string) error
+	CheckFileName(parentID uint, name string) error
+	CheckFolderName(parentID uint, name string) error
 	DeleteByLibrary(libraryID uint) error
 	UpdateFolder(folder *model.Folder) error
 }
@@ -39,8 +40,6 @@ func (s *folderSer) GetChildrenFolder(folderID uint) (*[]model.Folder, error) {
 }
 
 func (s *folderSer) GetChildrenFile(folderID uint) (*[]model.File, error) {
-	// folder := &model.Folder{Model: model.Model{ID: folderID}}
-	// return folder.GetChildrenFiles()
 	file := &model.File{FolderID: folderID}
 	return file.GetFilesByFolderID()
 }
@@ -49,9 +48,19 @@ func (s *folderSer) CreateChild(parent *model.Folder, name string) (*model.Folde
 	return parent.CreateChild(name)
 }
 
-func (s *folderSer) CheckFileName(folder *model.Folder, name string) error {
-	files, err := s.GetChildrenFile(folder.ID)
+func (s *folderSer) CheckFileName(parentID uint, name string) error {
+	files, err := s.GetChildrenFile(parentID)
 	for _, v := range *files {
+		if v.Name == name {
+			return fmt.Errorf("file name '%s' is exist", name)
+		}
+	}
+	return err
+}
+
+func (s *folderSer) CheckFolderName(parentID uint, name string) error {
+	folders, err := s.GetChildrenFolder(parentID)
+	for _, v := range *folders {
 		if v.Name == name {
 			return fmt.Errorf("file name '%s' is exist", name)
 		}
@@ -72,5 +81,8 @@ func (s *folderSer) DeleteByLibrary(libraryID uint) error {
 }
 
 func (s *folderSer) UpdateFolder(folder *model.Folder) error {
+	if err := s.CheckFolderName(folder.ParentID, folder.Name); err != nil {
+		return err
+	}
 	return model.DB().Save(folder).Error
 }

@@ -90,6 +90,31 @@ func (c *FolderController) PutBy(folderID uint, ctx iris.Context) *HttpResult {
 	return Success(child)
 }
 
+//更新文件夹名称
+func (c *FolderController) PostBy(parentId uint, ctx iris.Context) *HttpResult {
+	editFolderForm := struct {
+		Id   uint   `json:"id"`
+		Name string `json:"name"`
+	}{}
+	user := sessions.Get(ctx).Get("user").(*model.User)
+	if err := ctx.ReadJSON(&editFolderForm); err != nil {
+		return FailedCodeMessage(PARAM_ERROR, err.Error())
+	}
+	_folder, err := service.GetByID(&model.Folder{}, editFolderForm.Id)
+	if err != nil {
+		return FailedMessage(err.Error())
+	}
+	folder := _folder.(*model.Folder)
+	if hasRole, role, _ := user.HasLibrary(folder.LibraryID); !hasRole || role == model.Read {
+		return FailedForbidden(ctx)
+	}
+	folder.Name = editFolderForm.Name
+	if err = c.folderService.UpdateFolder(folder); err != nil {
+		return FailedMessage(err.Error())
+	}
+	return Success(folder)
+}
+
 // GetCheck 检测资料库是否重名
 func (c *FolderController) GetCheck(ctx iris.Context) *HttpResult {
 	name := ctx.URLParam("name")

@@ -19,9 +19,10 @@ var cfg config.Database
 // Init 初始化数据库
 func Init() error {
 	cfg = config.GetConfig().Database
-	log.Debug(fmt.Sprintf("%s:%s@%s", cfg.Username, cfg.Password, cfg.Url))
-	dsn := fmt.Sprintf("%s:%s@%s", cfg.Username, cfg.Password, cfg.Url)
-	_db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{DisableForeignKeyConstraintWhenMigrating: true, Logger: logger.Default.LogMode(logger.Info)})
+	// log.Debug(fmt.Sprintf("%s:%s@%s", cfg.Username, cfg.Password, cfg.Url))
+	// dsn := fmt.Sprintf("%s:%s@%s", cfg.Username, cfg.Password, cfg.Url)
+	// _db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{DisableForeignKeyConstraintWhenMigrating: true, Logger: logger.Default.LogMode(logger.Info)})
+	_db, err := makeDb()
 	// db, err := gorm.Open(sqlite.Open("myfile.db"), &gorm.Config{})
 	// db.Logger.LogMode(logger.Info)
 	if err != nil {
@@ -48,12 +49,26 @@ func Init() error {
 	return nil
 }
 
+func makeDb() (*gorm.DB, error) {
+	switch cfg.Type {
+	case config.Mysql:
+		return makeMysqlDb()
+
+	default:
+		return makeSqlLite()
+	}
+}
+
 func makeMysqlDb() (*gorm.DB, error) {
+	log.Debug(fmt.Sprintf("%s:%s@%s", cfg.Username, cfg.Password, cfg.Url))
 	dsn := fmt.Sprintf("%s:%s@%s", cfg.Username, cfg.Password, cfg.Url)
 	return gorm.Open(mysql.Open(dsn), &gorm.Config{DisableForeignKeyConstraintWhenMigrating: true, Logger: logger.Default.LogMode(logger.Info)})
 }
 
 func makeSqlLite() (*gorm.DB, error) {
+	// if cfg.Url ==  {
+	cfg.Url = "myfile.db"
+	// }
 	return gorm.Open(sqlite.Open(cfg.Url), &gorm.Config{DisableForeignKeyConstraintWhenMigrating: true, Logger: logger.Default.LogMode(logger.Info)})
 }
 

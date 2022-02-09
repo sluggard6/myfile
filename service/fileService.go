@@ -33,7 +33,7 @@ func (s *myFileSer) checkPolicy() {
 }
 
 func (s *myFileSer) SaveFile(reader io.Reader, name string, folder *model.Folder) (*model.File, error) {
-	if err := folderService.CheckFileName(folder, name); err != nil {
+	if err := folderService.CheckFileName(folder.ID, name); err != nil {
 		return nil, err
 	}
 	storeFile, err := s.store.SaveFile(reader, name)
