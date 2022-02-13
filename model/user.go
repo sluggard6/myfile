@@ -37,6 +37,15 @@ func (u *User) HasLibrary(libraryId uint) (bool, LibraryRole, string) {
 	return false, Read, ""
 }
 
+func (u *User) OwnLibrary(libraryId uint) bool {
+	for _, library := range u.Librarys {
+		if library.ID == libraryId {
+			return true
+		}
+	}
+	return false
+}
+
 func (u *User) HasLibraryName(name string) bool {
 	for _, library := range u.Librarys {
 		if library.Name == name {

@@ -21,13 +21,13 @@ func NewLibraryController() *LibraryController {
 func (c *LibraryController) Get(ctx iris.Context) *HttpResult {
 	user := sessions.Get(ctx).Get("user").(*model.User)
 	lTpye := ctx.URLParamDefault("type", "mine")
-	if "mine" == lTpye {
+	if lTpye == "mine" {
 		if librarys, err := c.libraryService.GetLibraryMine(user.ID); err != nil {
 			return FailedMessage(err.Error())
 		} else {
 			return Success(librarys)
 		}
-	} else if "share" == lTpye {
+	} else if lTpye == "share" {
 		if librarys, err := c.libraryService.GetLibraryShare(user.ID); err != nil {
 			return FailedMessage(err.Error())
 		} else {
@@ -53,16 +53,36 @@ func (c *LibraryController) Put(ctx iris.Context) *HttpResult {
 }
 
 func (c *LibraryController) Post(ctx iris.Context) *HttpResult {
-	user := sessions.Get(ctx).Get("user").(*model.User)
-	library := &model.Library{}
-	ctx.ReadJSON(library)
-	// name := ctx.URLParam("name")
-	if user.HasLibraryName(library.Name) {
-		return FailedMessage(fmt.Sprintf("资料库'%s'已存在", library.Name))
+	editLibraryForm := struct {
+		Id   uint   `json:"id"`
+		Name string `json:"name"`
+	}{}
+	if err := ctx.ReadJSON(&editLibraryForm); err != nil {
+		return FailedCodeMessage(PARAM_ERROR, err.Error())
 	}
-	err := c.libraryService.UpdateLibrary(library)
+	user := sessions.Get(ctx).Get("user").(*model.User)
+	if !user.OwnLibrary(editLibraryForm.Id) {
+		return FailedForbidden(ctx)
+	}
+	_library, err := service.GetByID(&model.Library{}, editLibraryForm.Id)
+	library := _library.(*model.Library)
+	if user.HasLibraryName(editLibraryForm.Name) {
+		return FailedMessage(fmt.Sprintf("资料库'%s'已存在", editLibraryForm.Name))
+	}
 	if err != nil {
 		return FailedMessage(err.Error())
+	}
+	library.Name = editLibraryForm.Name
+	err = c.libraryService.UpdateLibrary(library)
+	if err != nil {
+		return FailedMessage(err.Error())
+	}
+	// 更新user中的library
+	for i, _library := range user.Librarys {
+		if _library.ID == editLibraryForm.Id {
+			user.Librarys[i] = *library
+			break
+		}
 	}
 	return Success(library)
 }

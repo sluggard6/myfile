@@ -59,12 +59,14 @@ func FailedForbidden(ctx iris.Context) *HttpResult {
 	return &HttpResult{Code: 401, Message: "forbidden"}
 }
 func Cors(ctx iris.Context) {
-	ctx.Header("Access-Control-Allow-Origin", "*")
+	origin := ctx.GetHeader("Origin")
+	ctx.Header("Access-Control-Allow-Origin", origin)
 	ctx.Header("Access-Control-Allow-Credentials", "true")
 	if ctx.Request().Method == "OPTIONS" {
 		ctx.Header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,PATCH,OPTIONS")
 		ctx.Header("Access-Control-Allow-Headers", "Content-Type, Accept, Authorization, X-Token")
-		ctx.StatusCode(204)
+		//204
+		ctx.StatusCode(iris.StatusNoContent)
 		return
 	}
 	ctx.Next()
