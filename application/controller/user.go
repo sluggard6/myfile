@@ -48,6 +48,12 @@ func (c *UserController) PostLogin(ctx iris.Context) *HttpResult {
 	}
 }
 
+func (c *UserController) PostLogout(ctx iris.Context) *HttpResult {
+	session := sessions.Get(ctx)
+	session.Destroy()
+	return Success(nil)
+}
+
 func (c *UserController) GetInfo(ctx iris.Context) *HttpResult {
 	session := sessions.Get(ctx)
 	return c.GetBy(session.Get("user").(*model.User).ID)
