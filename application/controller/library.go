@@ -117,6 +117,30 @@ func (c *LibraryController) DeleteBy(id uint, ctx iris.Context) *HttpResult {
 	return Success(id)
 }
 
-func (c *LibraryController) PutShare() *HttpResult {
+func (c *LibraryController) PutShare(ctx iris.Context) *HttpResult {
+	shareLibraryForm := struct {
+		LibraryId  uint   `json:"id"`
+		Role       uint   `json:"role"`
+		ShareUsers []uint `json:"users"`
+	}{}
+	if err := ctx.ReadJSON(&shareLibraryForm); err != nil {
+		return FailedCodeMessage(PARAM_ERROR, err.Error())
+	}
+	user := sessions.Get(ctx).Get("user").(*model.User)
+
+	if user.OwnLibrary(shareLibraryForm.LibraryId) {
+		return FailedForbidden(ctx)
+	}
+	for userId := range shareLibraryForm.ShareUsers {
+		shareLibrary := model.ShareLibrary{
+			UserID:    uint(userId),
+			LibraryID: shareLibraryForm.LibraryId,
+			Role:      model.LibraryRole(shareLibraryForm.Role),
+		}
+		model.Create(shareLibrary)
+
+	}
+	print(user)
+	print(shareLibraryForm)
 	return nil
 }

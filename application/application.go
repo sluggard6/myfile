@@ -108,14 +108,20 @@ func (s *HttpServer) _Init() error {
 
 // AuthRequired 登录验证
 func AuthRequired(ctx iris.Context) {
-	log.Debug(ctx.Request().Method, ctx.Request().RequestURI)
+	// iris.CookieSameSite = iris.SameSiteNoneMode
+	log.Debug(ctx.Request().Method, "  ", ctx.Request().RequestURI)
+	// log.Debug(ctx.RequestPath(false))
+	session := sess.Start(ctx, iris.CookieSameSite(iris.SameSiteNoneMode))
+	// log.Debug(session)
+	// log.Debug(sess.GetCookieOptions())
 	//被忽略的url直接通过
 	for _, v := range ignoreAuthUrl {
 		if v == ctx.RequestPath(false) {
 			ctx.Next()
+			return
 		}
 	}
-	if auth, _ := sess.Start(ctx).GetBoolean("authenticated"); !auth {
+	if auth, _ := session.GetBoolean("authenticated"); !auth {
 		ctx.StatusCode(iris.StatusForbidden)
 		return
 	}
@@ -124,12 +130,12 @@ func AuthRequired(ctx iris.Context) {
 
 // RouteInit 初始化路由
 func (s *HttpServer) RouteInit() {
-
 	app := s.App
 	app.Options("/*", controller.Cors)
 	// app.Party("/*", controller.Cors).AllowMethods(iris.MethodOptions)
 	app.UseGlobal(controller.Cors)
 	app.Use(AuthRequired, sess.Handler())
+	// app.Use(sess.Handler())
 	mvc.New(app.Party("/test")).Handle(new(controller.TestController))
 	mvc.New(app.Party("/user")).Handle(controller.NewUserController())
 	mvc.New(app.Party("/library")).Handle(controller.NewLibraryController())
