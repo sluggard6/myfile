@@ -14,6 +14,9 @@ type LibraryService interface {
 	GetLibraryShare(userID uint) ([]model.ShareLibrary, error)
 	UpdateLibrary(library *model.Library) error
 	DeleteLibrary(id uint) error
+	ShareLibraryOne(libraryID uint, userID uint, role model.LibraryRole) error
+	ShareLibrarys(libraryID uint, userIds []uint, role model.LibraryRole) error
+	// ShareLibrary(shareLibrary *model.ShareLibrary) error
 }
 
 var libraryService = &librarySer{}
@@ -58,32 +61,42 @@ func (s *librarySer) GetLibraryShare(userID uint) ([]model.ShareLibrary, error) 
 	return share.GetLibraryShare(userID)
 }
 
-func (s *librarySer) ShareLibrary(libraryID uint, userIds []uint) error {
+func (s *librarySer) ShareLibrarys(libraryID uint, userIds []uint, role model.LibraryRole) error {
 	if len(userIds) == 0 {
 		return errors.New("userIds is nil")
 	}
 	var librarys []model.ShareLibrary
 	for _, userID := range userIds {
 		// libraryId[i] = model.ShareLibrary{}
-		librarys = append(librarys, model.ShareLibrary{UserID: userID, LibraryID: libraryID, Role: model.Write})
+		librarys = append(librarys, model.ShareLibrary{UserID: userID, LibraryID: libraryID, Role: role})
 
 	}
 	_, err := model.Create(&librarys)
 	return err
 }
 
-func (s *librarySer) ShareLibraryOne(libraryID uint, userID uint) error {
+func (s *librarySer) ShareLibraryOne(libraryID uint, userID uint, role model.LibraryRole) error {
 	if user, _ := userService.GetById(userID); user.ID <= 0 {
 		return fmt.Errorf("can't find user %d", libraryID)
 	}
-	if library, _ := model.GetById(&model.Library{}, libraryID); library.(model.Library).ID <= 0 {
+	if library, _ := model.GetById(&model.Library{}, libraryID); library.(*model.Library).ID <= 0 {
 		return fmt.Errorf("can't find library %d", libraryID)
+	} else {
+		if library.(*model.Library).UserID == userID {
+			return fmt.Errorf("can't share library to onwer")
+		}
 	}
 	shareLibrary := &model.ShareLibrary{}
-	if shareLibrary, _ = shareLibrary.GetLibraryByUserAndLibrary(userID, libraryID); shareLibrary.ID > 0 {
-		return fmt.Errorf("共享资料库%s(id:%d)已存在", shareLibrary.Library.Name, libraryID)
+	var err error
+	if shareLibrary, err = shareLibrary.GetLibraryByUserAndLibrary(userID, libraryID); shareLibrary.ID > 0 {
+		if shareLibrary.Role != role {
+			shareLibrary.Role = role
+			model.UpdateById(shareLibrary)
+		}
+		// return fmt.Errorf("共享资料库%s(id:%d)已存在", shareLibrary.Library.Name, libraryID)
+	} else {
+		_, err = model.Create(&model.ShareLibrary{UserID: userID, LibraryID: libraryID, Role: role})
 	}
-	_, err := model.Create(&model.ShareLibrary{UserID: userID, LibraryID: libraryID})
 	return err
 }
 
@@ -97,3 +110,21 @@ func (s *librarySer) DeleteLibrary(id uint) error {
 func (s *librarySer) UpdateLibrary(library *model.Library) error {
 	return model.DB().Save(library).Error
 }
+
+// func (s *librarySer) ShareLibrary(shareLibrary *model.ShareLibrary) error {
+// 	result := db.Where(&ShareLibrary{UserID: l.UserID, LibraryID: l.LibraryID}).First(&shareLibrary)
+// 	if err = result.Error; err != nil {
+// 		print(err.Error())
+// 		return
+// 	}
+// 	if result.RowsAffected == 0 {
+// 		Create(l)
+// 		shareLibrary = l
+// 	} else {
+// 		if shareLibrary.Role != l.Role {
+// 			shareLibrary.Role = l.Role
+// 			UpdateById(shareLibrary)
+// 		}
+// 	}
+// 	return
+// }

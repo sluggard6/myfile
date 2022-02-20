@@ -17,10 +17,10 @@ type Library struct {
 
 type ShareLibrary struct {
 	Model
-	UserID    uint    `gorm:"uniqueIndex:un_user_library" json:"userId"`
-	LibraryID uint    `gorm:"uniqueIndex:un_user_library" json:"libraryId"`
-	Library   Library `gorm:"foreignKey:ID;references:LibraryID"`
-	Role      LibraryRole
+	UserID    uint        `gorm:"uniqueIndex:un_user_library" json:"userId"`
+	LibraryID uint        `gorm:"uniqueIndex:un_user_library" json:"libraryId"`
+	Library   Library     `gorm:"foreignKey:ID;references:LibraryID" json:"library"`
+	Role      LibraryRole `json:"role"`
 }
 
 func (l *Library) GetLibraryMine(userId uint) (librarys []Library, err error) {
@@ -29,11 +29,12 @@ func (l *Library) GetLibraryMine(userId uint) (librarys []Library, err error) {
 }
 
 func (l *ShareLibrary) GetLibraryShare(userId uint) (librarys []ShareLibrary, err error) {
-	err = db.Where("user_id=?", userId).Find(&librarys).Error
+	err = db.Where("user_id=?", userId).Preload("Library").Preload("Library.Owner").Preload("Library.RootFolder").Find(&librarys).Error
+	// err = db.Where("user_id=?", userId).Joins("Library").Joins("Library.RootFolder").Find(&librarys).Error
 	return
 }
 
 func (l *ShareLibrary) GetLibraryByUserAndLibrary(userId uint, libraryId uint) (shareLibrary *ShareLibrary, err error) {
-	err = db.Where(&ShareLibrary{UserID: userId, LibraryID: libraryId}).First(shareLibrary).Error
+	err = db.Where(&ShareLibrary{UserID: userId, LibraryID: libraryId}).First(&shareLibrary).Error
 	return
 }

@@ -119,28 +119,34 @@ func (c *LibraryController) DeleteBy(id uint, ctx iris.Context) *HttpResult {
 
 func (c *LibraryController) PutShare(ctx iris.Context) *HttpResult {
 	shareLibraryForm := struct {
-		LibraryId  uint   `json:"id"`
-		Role       uint   `json:"role"`
-		ShareUsers []uint `json:"users"`
+		LibraryId  uint              `json:"id"`
+		Role       model.LibraryRole `json:"role"`
+		ShareUsers []uint            `json:"users"`
 	}{}
 	if err := ctx.ReadJSON(&shareLibraryForm); err != nil {
 		return FailedCodeMessage(PARAM_ERROR, err.Error())
 	}
 	user := sessions.Get(ctx).Get("user").(*model.User)
 
-	if user.OwnLibrary(shareLibraryForm.LibraryId) {
+	if !user.OwnLibrary(shareLibraryForm.LibraryId) {
 		return FailedForbidden(ctx)
 	}
-	for userId := range shareLibraryForm.ShareUsers {
-		shareLibrary := model.ShareLibrary{
-			UserID:    uint(userId),
-			LibraryID: shareLibraryForm.LibraryId,
-			Role:      model.LibraryRole(shareLibraryForm.Role),
+	ret := []model.ShareLibrary{}
+	for _, userId := range shareLibraryForm.ShareUsers {
+		if user.ID == uint(userId) {
+			continue
 		}
-		model.Create(shareLibrary)
-
+		c.libraryService.ShareLibraryOne(shareLibraryForm.LibraryId, userId, shareLibraryForm.Role)
+		// shareLibrary := model.ShareLibrary{
+		// 	UserID:    uint(userId),
+		// 	LibraryID: shareLibraryForm.LibraryId,
+		// 	Role:      model.LibraryRole(shareLibraryForm.Role),
+		// }
+		// if sl, err := shareLibrary.ReplaceShareLibrary(); err != nil {
+		// 	return FailedMessage(err.Error())
+		// } else {
+		// 	ret = append(ret, *sl)
+		// }
 	}
-	print(user)
-	print(shareLibraryForm)
-	return nil
+	return Success(ret)
 }
