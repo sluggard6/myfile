@@ -137,16 +137,6 @@ func (c *LibraryController) PutShare(ctx iris.Context) *HttpResult {
 			continue
 		}
 		c.libraryService.ShareLibraryOne(shareLibraryForm.LibraryId, userId, shareLibraryForm.Role)
-		// shareLibrary := model.ShareLibrary{
-		// 	UserID:    uint(userId),
-		// 	LibraryID: shareLibraryForm.LibraryId,
-		// 	Role:      model.LibraryRole(shareLibraryForm.Role),
-		// }
-		// if sl, err := shareLibrary.ReplaceShareLibrary(); err != nil {
-		// 	return FailedMessage(err.Error())
-		// } else {
-		// 	ret = append(ret, *sl)
-		// }
 	}
 	return Success(ret)
 }

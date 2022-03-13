@@ -68,13 +68,12 @@ func LoadConfing(path string) Config {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		fmt.Printf("unable to decode into struct, %v", err)
-		// panci(err)
-		// return nil, err
-	}
-	//读取的数据为json格式，需要进行解码
-	err = json.Unmarshal(data, &config)
-	if err != nil {
-		panic(err)
+	} else {
+		//读取的数据为json格式，需要进行解码
+		err = json.Unmarshal(data, &config)
+		if err != nil {
+			panic(err)
+		}
 	}
 	return config
 }
