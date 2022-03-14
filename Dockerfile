@@ -10,7 +10,7 @@ ENV GO111MODULE=on \
 WORKDIR /app 
 
 COPY . .
-RUN rm application.json
+# RUN rm application.json
 
 # RUN CC=clang CXX=clang++ GOOS=darwin GOARCH=amd64 CGO_ENABLED=1 go build .
 # RUN GOARCH=amd64 CGO_ENABLED=1 go build -ldflags="-w -s" -o .
@@ -23,5 +23,6 @@ FROM alpine:latest
 WORKDIR /myfile
 
 COPY --from=builder /app/myfile .
+#COPY conf/application.json /myfile/conf/application
 
-ENTRYPOINT [ "./myfile", "start" ]
+ENTRYPOINT [ "./myfile" ]
