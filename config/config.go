@@ -13,8 +13,9 @@ type Config struct {
 }
 
 type Server struct {
-	Host string
-	Port int
+	Host        string
+	Port        int
+	ContextPath string
 }
 
 type Store struct {
@@ -32,7 +33,7 @@ type dbType string
 type fileType string
 
 const (
-	DefaultConfigPath string   = "application.json"
+	DefaultConfigPath string   = "conf/application.json"
 	Mysql             dbType   = "mysql"
 	Sqlite            dbType   = "sqlite"
 	Yml               fileType = "yml"
@@ -41,8 +42,9 @@ const (
 
 var config Config = Config{
 	Server: Server{
-		Host: "0.0.0.0",
-		Port: 5678,
+		Host:        "0.0.0.0",
+		Port:        5678,
+		ContextPath: "",
 	},
 	Database: Database{
 		Type:     Sqlite,

@@ -130,17 +130,18 @@ func AuthRequired(ctx iris.Context) {
 
 // RouteInit 初始化路由
 func (s *HttpServer) RouteInit() {
+
 	app := s.App
 	app.Options("/*", controller.Cors)
 	// app.Party("/*", controller.Cors).AllowMethods(iris.MethodOptions)
 	app.UseGlobal(controller.Cors)
 	app.Use(AuthRequired, sess.Handler())
 	// app.Use(sess.Handler())
-	mvc.New(app.Party("/test")).Handle(new(controller.TestController))
-	mvc.New(app.Party("/user")).Handle(controller.NewUserController())
-	mvc.New(app.Party("/library")).Handle(controller.NewLibraryController())
-	mvc.New(app.Party("/folder")).Handle(controller.NewFolderController())
-	mvc.New(app.Party("/file")).Handle(controller.NewFileController(s.Store))
+	mvc.New(app.Party(s.Config.Server.ContextPath + "/test")).Handle(new(controller.TestController))
+	mvc.New(app.Party(s.Config.Server.ContextPath + "/user")).Handle(controller.NewUserController())
+	mvc.New(app.Party(s.Config.Server.ContextPath + "/library")).Handle(controller.NewLibraryController())
+	mvc.New(app.Party(s.Config.Server.ContextPath + "/folder")).Handle(controller.NewFolderController())
+	mvc.New(app.Party(s.Config.Server.ContextPath + "/file")).Handle(controller.NewFileController(s.Store))
 	for _, route := range app.APIBuilder.GetRoutes() {
 		log.Info(route)
 	}
