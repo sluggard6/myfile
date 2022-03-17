@@ -114,9 +114,10 @@ func AuthRequired(ctx iris.Context) {
 	session := sess.Start(ctx, iris.CookieSameSite(iris.SameSiteNoneMode))
 	// log.Debug(session)
 	// log.Debug(sess.GetCookieOptions())
+	path := config.GetConfig().Server.ContextPath
 	//被忽略的url直接通过
 	for _, v := range ignoreAuthUrl {
-		if v == ctx.RequestPath(false) {
+		if path+v == ctx.RequestPath(false) {
 			ctx.Next()
 			return
 		}
