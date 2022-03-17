@@ -1,26 +1,32 @@
-@host = http://localhost:5678
+@host = http://81.68.125.115:5678
+#@host = http://localhost:5678
+
+@cpath = /myfile
+
+###test
+GET {{host}}{{cpath}}/test/ping
 
 ###login
-POST {{host}}/user/login
+POST {{host}}{{cpath}}/user/login
 
 {"username":"admin","password":"111111"}
 
 ###resetPassword
-POST {{host}}/user/resetpass
+POST {{host}}{{cpath}}/user/resetpass
 
 {"oldpass":"111111","newpass":"111111"}
 
 ###register
-POST {{host}}/user/register
+POST {{host}}{{cpath}}/user/register
 
 {"username":"admin","password":"111111"}
 
 ###userLike
-GET {{host}}/user/like?queryString=a
+GET {{host}}{{cpath}}/user/like?queryString=a
 
 
 ###upload
-POST {{host}}/file/upload?folderId=4 HTTP/1.1
+POST {{host}}{{cpath}}/file/upload?folderId=4 HTTP/1.1
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryL3uJ3c0mfMKL94BR
 
 ------WebKitFormBoundaryL3uJ3c0mfMKL94BR
@@ -31,8 +37,8 @@ Content-Type: application/octet-stream
 ------WebKitFormBoundaryL3uJ3c0mfMKL94BR--
 
 ###checkLibraryName false
-GET {{host}}/library/check?name=Default Library
+GET {{host}}{{cpath}}/library/check?name=Default Library
 
 
 ###checkLibraryName true
-GET {{host}}/library/check?name=test
+GET {{host}}{{cpath}}/library/check?name=test
