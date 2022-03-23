@@ -25,3 +25,4 @@ application.yml
 
 file-data
 conf
+/statik/

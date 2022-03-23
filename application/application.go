@@ -1,15 +1,22 @@
+//go:generate statik -src=./assets/dist
+//go:generate go fmt statik/statik.go
+
 package application
 
 import (
 	stdContext "context"
 	"fmt"
+	"strings"
 	"time"
+
+	_ "github.com/sluggard/myfile/statik" // TODO: Replace with the absolute import path
 
 	"github.com/iris-contrib/swagger/v12"
 	"github.com/iris-contrib/swagger/v12/swaggerFiles"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/mvc"
 	"github.com/kataras/iris/v12/sessions"
+	"github.com/rakyll/statik/fs"
 	log "github.com/sirupsen/logrus"
 	"github.com/sluggard/myfile/application/controller"
 	"github.com/sluggard/myfile/config"
@@ -32,6 +39,7 @@ var (
 		"/test/ping",
 		"/user/login",
 		"/user/register",
+		"/app",
 	}
 )
 
@@ -116,7 +124,8 @@ func AuthRequired(ctx iris.Context) {
 	// log.Debug(sess.GetCookieOptions())
 	//被忽略的url直接通过
 	for _, v := range ignoreAuthUrl {
-		if v == ctx.RequestPath(false) {
+		if strings.HasPrefix(ctx.RequestPath(false), v) {
+			// if v == ctx.RequestPath(false) {
 			ctx.Next()
 			return
 		}
@@ -137,6 +146,12 @@ func (s *HttpServer) RouteInit() {
 	app.UseGlobal(controller.Cors)
 	app.Use(AuthRequired, sess.Handler())
 	// app.Use(sess.Handler())
+	statikFS, err := fs.New()
+	if err == nil {
+		app.HandleDir(s.Config.Server.ContextPath+"/app", statikFS)
+	} else {
+		fmt.Printf("err: %v\n", err)
+	}
 	mvc.New(app.Party(s.Config.Server.ContextPath + "/test")).Handle(new(controller.TestController))
 	mvc.New(app.Party(s.Config.Server.ContextPath + "/user")).Handle(controller.NewUserController())
 	mvc.New(app.Party(s.Config.Server.ContextPath + "/library")).Handle(controller.NewLibraryController())
