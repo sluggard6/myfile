@@ -1,6 +1,7 @@
 FROM golang:1.17-alpine3.15
 
 RUN apk --no-cache add build-base
+RUN apk add npm
 
 ENV GO111MODULE=on \
     GOPROXY=https://goproxy.cn,direct
