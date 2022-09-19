@@ -47,9 +47,6 @@ func (fs *FileStore) SaveFile(reader io.Reader, name string) (*File, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err != nil {
-		return nil, err
-	}
 	hexString := hex.EncodeToString(sha)
 	// var fileName = fs.Root + string(filepath.Separator) + strings.Join(makeFilePath(hexString), string(filepath.Separator)) + filepath.Ext(name)
 	var fileName = strings.Join(makeFilePath(hexString), string(filepath.Separator)) + filepath.Ext(name)
