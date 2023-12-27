@@ -3,7 +3,11 @@ package config
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
+	"path/filepath"
+
+	log "github.com/sirupsen/logrus"
+	yaml "gopkg.in/yaml.v3"
 )
 
 type Config struct {
@@ -15,7 +19,7 @@ type Config struct {
 type Server struct {
 	Host        string
 	Port        int
-	ContextPath string
+	ContextPath string `yaml:"contextPath"`
 }
 
 type Store struct {
@@ -33,7 +37,7 @@ type dbType string
 type fileType string
 
 const (
-	DefaultConfigPath string   = "conf/application.json"
+	DefaultConfigPath string   = "conf/application.yml"
 	Mysql             dbType   = "mysql"
 	Sqlite            dbType   = "sqlite"
 	Yml               fileType = "yml"
@@ -63,11 +67,23 @@ func GetConfig() *Config {
 
 func New(config string) Config {
 	// return Config{"127.0.0.1", 5678}
-	return LoadConfing(DefaultConfigPath)
+	return LoadConfig(DefaultConfigPath)
 }
 
-func LoadConfing(path string) Config {
-	data, err := ioutil.ReadFile(path)
+func LoadConfig(path string) Config {
+	ext := filepath.Ext(path)
+	if ext == ".json" {
+		return loadJsonConfig(path)
+	} else if ext == ".yml" || ext == ".yaml" {
+		return loadYmlConfig(path)
+	} else {
+		log.Error("unknow file " + path)
+		return config
+	}
+}
+
+func loadJsonConfig(path string) Config {
+	data, err := os.ReadFile(path)
 	if err != nil {
 		fmt.Printf("unable to decode into struct, %v", err)
 	} else {
@@ -77,5 +93,18 @@ func LoadConfing(path string) Config {
 			panic(err)
 		}
 	}
+	return config
+}
+
+func loadYmlConfig(path string) Config {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		log.Printf("读取配置文件失败 #%v", err)
+	}
+	err = yaml.Unmarshal(data, &config)
+	if err != nil {
+		log.Fatalf("解析失败: %v", err)
+	}
+	log.Debug(config)
 	return config
 }

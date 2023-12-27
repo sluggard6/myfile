@@ -9,7 +9,7 @@ import (
 )
 
 func TestReadCustomViaUnmarshaler(t *testing.T) {
-	app := application.NewServer(config.LoadConfing(config.DefaultConfigPath))
+	app := application.NewServer(config.LoadConfig(config.DefaultConfigPath))
 	e := httptest.New(t, app.App)
 	expectedResponse := `Received: main.config{Addr:"localhost:5678", ServerName:"Iris"}`
 	e.OPTIONS("/").WithText("addr: localhost:8080\nserverName: Iris").Expect().

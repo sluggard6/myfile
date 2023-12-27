@@ -17,7 +17,7 @@ var (
 	command    string
 )
 
-//Version 程序版本号
+// Version 程序版本号
 const Version = "0.0.4"
 
 func main() {
@@ -57,7 +57,7 @@ func main() {
 
 	// if(os.Args[-1])
 
-	irisServer := application.NewServer(config.LoadConfing(*configFile))
+	irisServer := application.NewServer(config.LoadConfig(*configFile))
 	log.Info(config.GetConfig())
 	if irisServer == nil {
 		panic("http server 初始化失败")
