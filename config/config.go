@@ -36,6 +36,14 @@ type Database struct {
 type dbType string
 type fileType string
 
+type ConfigException struct {
+	Message string
+}
+
+func (e *ConfigException) Error() string {
+	return e.Message
+}
+
 const (
 	DefaultConfigPath string   = "conf/application.yml"
 	Mysql             dbType   = "mysql"
@@ -80,6 +88,29 @@ func LoadConfig(path string) Config {
 		log.Error("unknow file " + path)
 		return config
 	}
+}
+
+func LoadConfig2(path string) Config {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		fmt.Printf("unable to decode into struct, %v", err)
+	} else {
+		ext := filepath.Ext(path)
+		switch ext {
+		case ".json":
+			err = json.Unmarshal(data, &config)
+		case ".yml":
+			err = yaml.Unmarshal(data, &config)
+		case ".yaml":
+			err = yaml.Unmarshal(data, &config)
+		default:
+			panic(&ConfigException{"unknow file exception"})
+		}
+		if err != nil {
+			panic(err)
+		}
+	}
+	return config
 }
 
 func loadJsonConfig(path string) Config {
