@@ -16,7 +16,7 @@ type Library struct {
 }
 
 type ShareLibrary struct {
-	Model
+	ModelHard
 	UserID    uint        `gorm:"uniqueIndex:un_user_library" json:"userId"`
 	LibraryID uint        `gorm:"uniqueIndex:un_user_library" json:"libraryId"`
 	Library   Library     `gorm:"foreignKey:ID;references:LibraryID" json:"library"`

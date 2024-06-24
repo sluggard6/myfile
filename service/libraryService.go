@@ -16,6 +16,7 @@ type LibraryService interface {
 	DeleteLibrary(id uint) error
 	ShareLibraryOne(libraryID uint, userID uint, role model.LibraryRole) error
 	ShareLibrarys(libraryID uint, userIds []uint, role model.LibraryRole) error
+	RemoveShareLibrary(shareLibraryID uint, userID uint) error
 	// ShareLibrary(shareLibrary *model.ShareLibrary) error
 }
 
@@ -109,6 +110,11 @@ func (s *librarySer) DeleteLibrary(id uint) error {
 
 func (s *librarySer) UpdateLibrary(library *model.Library) error {
 	return model.DB().Save(library).Error
+}
+
+func (s *librarySer) RemoveShareLibrary(shareLibraryID uint, userID uint) error {
+	shareLibrary := &model.ShareLibrary{ModelHard: model.ModelHard{ID: shareLibraryID}}
+	return model.DB().Where("user_id=?", userID).Delete(shareLibrary).Error
 }
 
 // func (s *librarySer) ShareLibrary(shareLibrary *model.ShareLibrary) error {

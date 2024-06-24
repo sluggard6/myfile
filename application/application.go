@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/sluggard/myfile/service"
 	_ "github.com/sluggard/myfile/statik" // TODO: Replace with the absolute import path
 
 	"github.com/iris-contrib/swagger/v12"
@@ -114,6 +115,29 @@ func (s *HttpServer) _Init() error {
 	return nil
 }
 
+func TokenRequired(ctx iris.Context) {
+	path := config.GetConfig().Server.ContextPath
+	//被忽略的url直接通过
+	for _, v := range ignoreAuthUrl {
+		if strings.HasPrefix(ctx.RequestPath(false), path+v) {
+			// if path+v == ctx.RequestPath(false) {
+			ctx.Next()
+			return
+		}
+	}
+	token := ctx.GetHeader("Authorization")
+	if user, err := service.NewTokenService().CheckToken(token); err != nil {
+		ctx.StatusCode(iris.StatusUnauthorized)
+		ctx.JSON(iris.Map{
+			"code":    401,
+			"message": "token验证失败",
+		})
+	} else {
+		ctx.Values().Set("user", user)
+		ctx.Next()
+	}
+}
+
 // AuthRequired 登录验证
 func AuthRequired(ctx iris.Context) {
 	// iris.CookieSameSite = iris.SameSiteNoneMode
@@ -145,7 +169,8 @@ func (s *HttpServer) RouteInit() {
 	app.Options("/*", controller.Cors)
 	// app.Party("/*", controller.Cors).AllowMethods(iris.MethodOptions)
 	app.UseGlobal(controller.Cors)
-	app.Use(AuthRequired, sess.Handler())
+	app.Use(TokenRequired)
+	// app.Use(AuthRequired, sess.Handler())
 	// app.Use(sess.Handler())
 	statikFS, err := fs.New()
 	if err == nil {

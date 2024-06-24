@@ -19,7 +19,13 @@ func NewLibraryController() *LibraryController {
 }
 
 func (c *LibraryController) Get(ctx iris.Context) *HttpResult {
-	user := sessions.Get(ctx).Get("user").(*model.User)
+	user := ctx.Values().Get("user").(*model.User)
+	// user := model.User{}
+	// if _, err := model.GetById(user, userId); err != nil {
+	// 	return FailedMessage(err.Error())
+	// }
+	// model.User(user)
+	// user := sessions.Get(ctx).Get("user").(*model.User)
 	lTpye := ctx.URLParamDefault("type", "mine")
 	if lTpye == "mine" {
 		if librarys, err := c.libraryService.GetLibraryMine(user.ID); err != nil {
@@ -139,4 +145,28 @@ func (c *LibraryController) PutShare(ctx iris.Context) *HttpResult {
 		c.libraryService.ShareLibraryOne(shareLibraryForm.LibraryId, userId, shareLibraryForm.Role)
 	}
 	return Success(ret)
+}
+
+func (c *LibraryController) DeleteShare(ctx iris.Context) *HttpResult {
+	deleteShareForm := struct {
+		ShareLibraryId uint `json:"id"`
+		OwnerId        uint `json:"ownerId"`
+	}{}
+	user := sessions.Get(ctx).Get("user").(*model.User)
+	var shareLibrary interface{}
+	var err error
+	if err = ctx.ReadJSON(&deleteShareForm); err != nil {
+		return FailedCodeMessage(PARAM_ERROR, err.Error())
+	}
+	if user.ID == deleteShareForm.OwnerId {
+		c.libraryService.RemoveShareLibrary(deleteShareForm.ShareLibraryId, deleteShareForm.OwnerId)
+	} else {
+		if shareLibrary, err = model.GetById(&model.ShareLibrary{}, deleteShareForm.ShareLibraryId); err == nil {
+			print(shareLibrary)
+			if has, _, _ := user.HasLibrary(shareLibrary.(*model.ShareLibrary).LibraryID); has {
+				c.libraryService.RemoveShareLibrary(deleteShareForm.ShareLibraryId, deleteShareForm.OwnerId)
+			}
+		}
+	}
+	return Success(nil)
 }

@@ -9,11 +9,12 @@ import (
 )
 
 type UserController struct {
-	userService service.UserService
+	userService  service.UserService
+	tokenService service.TokenService
 }
 
 func NewUserController() *UserController {
-	return &UserController{service.NewUserService()}
+	return &UserController{userService: service.NewUserService(), tokenService: service.NewTokenService()}
 }
 
 type LoginForm struct {
@@ -41,10 +42,12 @@ func (c *UserController) PostLogin(ctx iris.Context) *HttpResult {
 	if user, err := c.userService.Login(loginForm.Username, loginForm.Password); user == nil {
 		return FailedCodeMessage(LOGIN_FAILED, err.Error())
 	} else {
-		session := sessions.Get(ctx)
-		session.Set("authenticated", true)
-		session.Set("user", user)
-		return Success(&LoginInfo{User: user, Token: session.ID()})
+		// session := sessions.Get(ctx)
+		// session.Set("authenticated", true)
+		// session.Set("user", user)
+		// return Success(&LoginInfo{User: user, Token: session.ID()})
+		token, _ := c.tokenService.NewToken(user)
+		return Success(&LoginInfo{User: user, Token: token})
 	}
 }
 

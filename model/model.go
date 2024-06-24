@@ -44,6 +44,12 @@ type Model struct {
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"deleteAt"`
 }
 
+type ModelHard struct {
+	ID        uint     `gorm:"primarykey" json:"id"`
+	CreatedAt JsonTime `json:"createdAt"`
+	UpdatedAt JsonTime `json:"updatedAt"`
+}
+
 func DB() *gorm.DB {
 	return db
 }

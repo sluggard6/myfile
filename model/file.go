@@ -1,6 +1,6 @@
 package model
 
-//Policy 存储策略
+// Policy 存储策略
 type Policy struct {
 	Model
 	Type PolicyType
@@ -8,7 +8,7 @@ type Policy struct {
 	Sha  string
 }
 
-//PolicyType 策略类型
+// PolicyType 策略类型
 type PolicyType string
 
 const (
@@ -16,7 +16,7 @@ const (
 	MyFile PolicyType = "myfile"
 )
 
-//File 文件
+// File 文件
 type File struct {
 	Model
 	Name     string  `json:"name"`
@@ -28,7 +28,7 @@ type File struct {
 	Policy   *Policy `gorm:"foreignKey:PolicyID" json:"-"`
 }
 
-//GetFilesByFolderID 查询目录下的所有文件
+// GetFilesByFolderID 查询目录下的所有文件
 func (file *File) GetFilesByFolderID() (files *[]File, err error) {
 	files = &[]File{}
 	err = db.Where("folder_id=?", file.FolderID).Find(files).Error
