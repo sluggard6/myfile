@@ -94,7 +94,8 @@ func (c *UserController) PostRegister(ctx iris.Context) *HttpResult {
 }
 
 func (c *UserController) GetLike(ctx iris.Context) *HttpResult {
-	user := sessions.Get(ctx).Get("user").(*model.User)
+	user := CurrentUser(ctx)
+	// user := sessions.Get(ctx).Get("user").(*model.User)
 	queryString := ctx.URLParam("queryString")
 	s := make([]model.User, 0)
 	result := &s
@@ -104,7 +105,8 @@ func (c *UserController) GetLike(ctx iris.Context) *HttpResult {
 }
 
 func (c *UserController) PostResetpass(ctx iris.Context) *HttpResult {
-	user := sessions.Get(ctx).Get("user").(*model.User)
+	user := CurrentUser(ctx)
+	// user := sessions.Get(ctx).Get("user").(*model.User)
 	resetPassForm := &ResetPassForm{}
 	if err := ctx.ReadJSON(resetPassForm); err != nil {
 		ctx.StatusCode(iris.StatusBadRequest)

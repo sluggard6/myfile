@@ -3,6 +3,9 @@ package controller
 import (
 	"github.com/go-playground/validator/v10"
 	"github.com/kataras/iris/v12"
+	"github.com/kataras/iris/v12/sessions"
+	"github.com/sluggard/myfile/config"
+	"github.com/sluggard/myfile/model"
 )
 
 type HttpResult struct {
@@ -70,4 +73,14 @@ func Cors(ctx iris.Context) {
 		return
 	}
 	ctx.Next()
+}
+
+func CurrentUser(ctx iris.Context) (user *model.User) {
+	if config.GetConfig().Server.AuthType == "token" {
+		return ctx.Values().Get("user").(*model.User)
+	} else if config.GetConfig().Server.AuthType == "session" {
+		return sessions.Get(ctx).Get("user").(*model.User)
+	} else {
+		return nil
+	}
 }

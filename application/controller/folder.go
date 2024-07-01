@@ -5,36 +5,36 @@ import (
 	"strconv"
 
 	"github.com/kataras/iris/v12"
-	"github.com/kataras/iris/v12/sessions"
 	"github.com/sluggard/myfile/model"
 	"github.com/sluggard/myfile/service"
 )
 
-//FolderController 目录控制器
+// FolderController 目录控制器
 type FolderController struct {
 	folderService service.FolderService
 }
 
-//NewFolderController 创建
+// NewFolderController 创建
 func NewFolderController() *FolderController {
 	return &FolderController{service.NewFolderService()}
 }
 
-//Children 目录内的所有内容
+// Children 目录内的所有内容
 type Children struct {
 	Folders *[]model.Folder `json:"folders"`
 	Files   *[]model.File   `json:"files"`
 }
 
-//GetBy 获取目录内所有内容
+// GetBy 获取目录内所有内容
 func (c *FolderController) GetBy(folderID uint, ctx iris.Context) *HttpResult {
+	user := CurrentUser(ctx)
 	folder := &model.Folder{}
 	model.GetById(folder, folderID)
-	sess := sessions.Get(ctx)
-	user := sess.Get("user")
+	// sess := sessions.Get(ctx)
+	// user := sess.Get("user")
 	var libraryName string
 	var hasRole bool
-	if hasRole, _, libraryName = user.(*model.User).HasLibrary(folder.LibraryID); !hasRole {
+	if hasRole, _, libraryName = user.HasLibrary(folder.LibraryID); !hasRole {
 		return FailedForbidden(ctx)
 	}
 	var folders *[]model.Folder
@@ -68,10 +68,11 @@ func (c *FolderController) GetBy(folderID uint, ctx iris.Context) *HttpResult {
 	return Success(ret)
 }
 
-//PutBy 创建子目录
+// PutBy 创建子目录
 func (c *FolderController) PutBy(folderID uint, ctx iris.Context) *HttpResult {
-	sess := sessions.Get(ctx)
-	user := sess.Get("user").(*model.User)
+	user := CurrentUser(ctx)
+	// sess := sessions.Get(ctx)
+	// user := sess.Get("user").(*model.User)
 	folder, err := service.GetByID(&model.Folder{}, folderID)
 	if err != nil {
 		return FailedMessage(err.Error())
@@ -90,13 +91,14 @@ func (c *FolderController) PutBy(folderID uint, ctx iris.Context) *HttpResult {
 	return Success(child)
 }
 
-//更新文件夹名称
+// 更新文件夹名称
 func (c *FolderController) PostBy(parentId uint, ctx iris.Context) *HttpResult {
+	user := CurrentUser(ctx)
 	editFolderForm := struct {
 		Id   uint   `json:"id"`
 		Name string `json:"name"`
 	}{}
-	user := sessions.Get(ctx).Get("user").(*model.User)
+	// user := sessions.Get(ctx).Get("user").(*model.User)
 	if err := ctx.ReadJSON(&editFolderForm); err != nil {
 		return FailedCodeMessage(PARAM_ERROR, err.Error())
 	}

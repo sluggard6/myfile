@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/kataras/iris/v12"
-	"github.com/kataras/iris/v12/sessions"
 	"github.com/sirupsen/logrus"
 	"github.com/sluggard/myfile/model"
 	"github.com/sluggard/myfile/service"
@@ -19,7 +18,8 @@ func NewLibraryController() *LibraryController {
 }
 
 func (c *LibraryController) Get(ctx iris.Context) *HttpResult {
-	user := ctx.Values().Get("user").(*model.User)
+	user := CurrentUser(ctx)
+	// user := ctx.Values().Get("user").(*model.User)
 	// user := model.User{}
 	// if _, err := model.GetById(user, userId); err != nil {
 	// 	return FailedMessage(err.Error())
@@ -45,7 +45,8 @@ func (c *LibraryController) Get(ctx iris.Context) *HttpResult {
 }
 
 func (c *LibraryController) Put(ctx iris.Context) *HttpResult {
-	user := sessions.Get(ctx).Get("user").(*model.User)
+	user := CurrentUser(ctx)
+	// user := sessions.Get(ctx).Get("user").(*model.User)
 	name := ctx.URLParam("name")
 	if user.HasLibraryName(name) {
 		return FailedMessage(fmt.Sprintf("资料库'%s'已存在", name))
@@ -59,6 +60,7 @@ func (c *LibraryController) Put(ctx iris.Context) *HttpResult {
 }
 
 func (c *LibraryController) Post(ctx iris.Context) *HttpResult {
+	user := CurrentUser(ctx)
 	editLibraryForm := struct {
 		Id   uint   `json:"id"`
 		Name string `json:"name"`
@@ -66,7 +68,7 @@ func (c *LibraryController) Post(ctx iris.Context) *HttpResult {
 	if err := ctx.ReadJSON(&editLibraryForm); err != nil {
 		return FailedCodeMessage(PARAM_ERROR, err.Error())
 	}
-	user := sessions.Get(ctx).Get("user").(*model.User)
+	// user := sessions.Get(ctx).Get("user").(*model.User)
 	if !user.OwnLibrary(editLibraryForm.Id) {
 		return FailedForbidden(ctx)
 	}
@@ -94,8 +96,9 @@ func (c *LibraryController) Post(ctx iris.Context) *HttpResult {
 }
 
 func (c *LibraryController) GetCheck(ctx iris.Context) *HttpResult {
+	user := CurrentUser(ctx)
 	name := ctx.URLParam("name")
-	user := sessions.Get(ctx).Get("user").(*model.User)
+	// user := sessions.Get(ctx).Get("user").(*model.User)
 	if user.HasLibraryName(name) {
 		return SuccessMessage(fmt.Sprintf("资料库'%s'已存在", name), false)
 	} else {
@@ -104,7 +107,8 @@ func (c *LibraryController) GetCheck(ctx iris.Context) *HttpResult {
 }
 
 func (c *LibraryController) DeleteBy(id uint, ctx iris.Context) *HttpResult {
-	user := sessions.Get(ctx).Get("user").(*model.User)
+	user := CurrentUser(ctx)
+	// user := sessions.Get(ctx).Get("user").(*model.User)
 	if b, _, _ := user.HasLibrary(id); !b {
 		return FailedForbidden(ctx)
 	}
@@ -124,6 +128,7 @@ func (c *LibraryController) DeleteBy(id uint, ctx iris.Context) *HttpResult {
 }
 
 func (c *LibraryController) PutShare(ctx iris.Context) *HttpResult {
+	user := CurrentUser(ctx)
 	shareLibraryForm := struct {
 		LibraryId  uint              `json:"id"`
 		Role       model.LibraryRole `json:"role"`
@@ -132,7 +137,7 @@ func (c *LibraryController) PutShare(ctx iris.Context) *HttpResult {
 	if err := ctx.ReadJSON(&shareLibraryForm); err != nil {
 		return FailedCodeMessage(PARAM_ERROR, err.Error())
 	}
-	user := sessions.Get(ctx).Get("user").(*model.User)
+	// user := sessions.Get(ctx).Get("user").(*model.User)
 
 	if !user.OwnLibrary(shareLibraryForm.LibraryId) {
 		return FailedForbidden(ctx)
@@ -148,11 +153,12 @@ func (c *LibraryController) PutShare(ctx iris.Context) *HttpResult {
 }
 
 func (c *LibraryController) DeleteShare(ctx iris.Context) *HttpResult {
+	user := CurrentUser(ctx)
 	deleteShareForm := struct {
 		ShareLibraryId uint `json:"id"`
 		OwnerId        uint `json:"ownerId"`
 	}{}
-	user := sessions.Get(ctx).Get("user").(*model.User)
+	// user := sessions.Get(ctx).Get("user").(*model.User)
 	var shareLibrary interface{}
 	var err error
 	if err = ctx.ReadJSON(&deleteShareForm); err != nil {
