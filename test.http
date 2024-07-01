@@ -1,10 +1,17 @@
 # @host = http://81.68.125.115
+# @host = http://81.68.125.115:5678
 @host = http://localhost:5678
 
 @cpath = /myfile
+@token = "52ca5a512bd04f31999430ea87c255c5"
+
+User-Agent: rest-client
+Accept-Language: en-GB,en-US;q=0.8,en;q=0.6,zh-CN;q=0.4
+Content-Type: application/json
 
 ###test
 GET {{host}}{{cpath}}/test/ping
+Authorization: {{token}}
 
 ###login
 POST {{host}}{{cpath}}/user/login
@@ -23,7 +30,7 @@ POST {{host}}{{cpath}}/user/register
 
 ###userLike
 GET {{host}}{{cpath}}/user/like?queryString=a
-
+Authorization: {{token}}
 
 ###upload
 POST {{host}}{{cpath}}/file/upload?folderId=4 HTTP/1.1
@@ -54,4 +61,4 @@ DELETE {{host}}{{cpath}}/library/share
 
 ###getLibrary
 GET {{host}}{{cpath}}/library
-Authorization: cd738a3eb605486d90bf5bea3651b750
+Authorization: {{token}}

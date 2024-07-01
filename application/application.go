@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/sluggard/myfile/service"
-	_ "github.com/sluggard/myfile/statik" // TODO: Replace with the absolute import path
+	//_ "github.com/sluggard/myfile/statik" // TODO: Replace with the absolute import path
 
 	"github.com/iris-contrib/swagger/v12"
 	"github.com/iris-contrib/swagger/v12/swaggerFiles"
@@ -187,3 +187,7 @@ func (s *HttpServer) RouteInit() {
 		log.Info(route)
 	}
 }
+
+// func (s *HttpServer) addWebDAV(path string, libraryId int) {
+// 	s.App.HandleDir()
+// }

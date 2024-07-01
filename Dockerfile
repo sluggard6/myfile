@@ -8,7 +8,7 @@ ENV GO111MODULE=on \
 WORKDIR /app 
 
 COPY . .
-RUN sh build.sh
+# RUN sh build.sh
 
 RUN go build 
 
