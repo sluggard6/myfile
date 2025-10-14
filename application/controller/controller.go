@@ -6,6 +6,7 @@ import (
 	"github.com/kataras/iris/v12/sessions"
 	"github.com/sluggard/myfile/config"
 	"github.com/sluggard/myfile/model"
+	"github.com/sluggard/myfile/service"
 )
 
 type HttpResult struct {
@@ -84,3 +85,19 @@ func CurrentUser(ctx iris.Context) (user *model.User) {
 		return nil
 	}
 }
+
+type ControllerGroup struct {
+	UserController
+	FolderController
+	LibraryController
+	FileController
+}
+
+var ControllerGroupApp = new(ControllerGroup)
+
+var (
+	userService    = service.ServiceGroupApp.UserService
+	tokenService   = service.ServiceGroupApp.TokenService
+	folderService  = service.ServiceGroupApp.FolderService
+	libraryService = service.ServiceGroupApp.LibraryService
+)

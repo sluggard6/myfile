@@ -3,7 +3,7 @@
 @host = http://localhost:5678
 
 @cpath = /myfile
-@token = "52ca5a512bd04f31999430ea87c255c5"
+@token = a263f9948ea147609e44ab2410fba4c8
 
 User-Agent: rest-client
 Accept-Language: en-GB,en-US;q=0.8,en;q=0.6,zh-CN;q=0.4
@@ -16,7 +16,7 @@ Authorization: {{token}}
 ###login
 POST {{host}}{{cpath}}/user/login
 
-{"username":"test","password":"111111"}
+{"username":"admin","password":"111111"}
 
 ###resetPassword
 POST {{host}}{{cpath}}/user/resetpass

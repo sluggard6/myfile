@@ -57,7 +57,8 @@ func main() {
 
 	// if(os.Args[-1])
 
-	irisServer := application.NewServer(config.LoadConfig(*configFile))
+	// irisServer := application.NewServer(config.LoadConfig(*configFile))
+	irisServer := application.NewServer(config.InitViperConfig())
 	log.Info(config.GetConfig())
 	if irisServer == nil {
 		panic("http server 初始化失败")

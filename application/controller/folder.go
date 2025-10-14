@@ -11,13 +11,13 @@ import (
 
 // FolderController 目录控制器
 type FolderController struct {
-	folderService service.FolderService
+	// folderService service.FolderService
 }
 
 // NewFolderController 创建
-func NewFolderController() *FolderController {
-	return &FolderController{service.NewFolderService()}
-}
+// func NewFolderController() *FolderController {
+// return &FolderController{service.NewFolderService()}
+// }
 
 // Children 目录内的所有内容
 type Children struct {
@@ -41,11 +41,11 @@ func (c *FolderController) GetBy(folderID uint, ctx iris.Context) *HttpResult {
 	var files *[]model.File
 	var path []model.PathItem
 	var err error
-	folders, err = c.folderService.GetChildrenFolder(folderID)
+	folders, err = folderService.GetChildrenFolder(folderID)
 	if err != nil {
 		return FailedMessage(err.Error())
 	}
-	files, err = c.folderService.GetChildrenFile(folderID)
+	files, err = folderService.GetChildrenFile(folderID)
 	if err != nil {
 		return FailedMessage(err.Error())
 	}
@@ -84,7 +84,7 @@ func (c *FolderController) PutBy(folderID uint, ctx iris.Context) *HttpResult {
 	if name == "" {
 		return FailedCode(PARAM_ERROR)
 	}
-	child, err := c.folderService.CreateChild(folder.(*model.Folder), name)
+	child, err := folderService.CreateChild(folder.(*model.Folder), name)
 	if err != nil {
 		return FailedMessage(err.Error())
 	}
@@ -111,7 +111,7 @@ func (c *FolderController) PostBy(parentId uint, ctx iris.Context) *HttpResult {
 		return FailedForbidden(ctx)
 	}
 	folder.Name = editFolderForm.Name
-	if err = c.folderService.UpdateFolder(folder); err != nil {
+	if err = folderService.UpdateFolder(folder); err != nil {
 		return FailedMessage(err.Error())
 	}
 	return Success(folder)
@@ -124,7 +124,7 @@ func (c *FolderController) GetCheck(ctx iris.Context) *HttpResult {
 	if err != nil {
 		return FailedMessage(err.Error())
 	}
-	folders, err := c.folderService.GetChildrenFolder(uint(parentID))
+	folders, err := folderService.GetChildrenFolder(uint(parentID))
 	if err != nil {
 		return FailedMessage(err.Error())
 	}

@@ -9,25 +9,29 @@ import (
 	"github.com/sluggard/myfile/util"
 )
 
-//UserService 用户服务
-type UserService interface {
-	Login(username string, password string) (*model.User, error)
-	Register(user *model.User) error
-	GetById(id uint) (*model.User, error)
-	ResetPassword(userId uint, oldpass string, newpass string) (bool, error)
-}
+// UserService 用户服务
+// type UserService interface {
+// 	Login(username string, password string) (*model.User, error)
+// 	Register(user *model.User) error
+// 	GetById(id uint) (*model.User, error)
+// 	ResetPassword(userId uint, oldpass string, newpass string) (bool, error)
+// }
 
-var userService = &userSer{}
+// var userService = &userSer{}
 
-//NewUserService 返回单例的用户服务
-func NewUserService() UserService {
-	return userService
-}
+// NewUserService 返回单例的用户服务
+// func NewUserService() UserService {
+// 	return userService
+// }
 
-type userSer struct {
-}
+// type userSer struct {
+// }
 
-func (s *userSer) Login(username string, password string) (user *model.User, err error) {
+var userService = &UserService{}
+
+type UserService struct{}
+
+func (s *UserService) Login(username string, password string) (user *model.User, err error) {
 	if user, err = user.GetUserByUsername(username); err != nil {
 		return nil, err
 	}
@@ -37,7 +41,7 @@ func (s *userSer) Login(username string, password string) (user *model.User, err
 	}
 	return nil, &common.CommonError{Message: "check password failed"}
 }
-func (s *userSer) Register(user *model.User) error {
+func (s *UserService) Register(user *model.User) error {
 	if user, _ := user.GetUserByUsername(user.Username); user.ID > 0 {
 		return &common.CommonError{Message: "用户已存在"}
 	}
@@ -52,11 +56,11 @@ func (s *userSer) Register(user *model.User) error {
 	return nil
 }
 
-func (s *userSer) GetById(id uint) (user *model.User, err error) {
+func (s *UserService) GetById(id uint) (user *model.User, err error) {
 	return user.GetUserById(id)
 }
 
-func (s *userSer) ResetPassword(userId uint, oldpass string, newpass string) (bool, error) {
+func (s *UserService) ResetPassword(userId uint, oldpass string, newpass string) (bool, error) {
 	user, _ := s.GetById(userId)
 	if checkPassword(user, oldpass) {
 		user.Password = buildPassword(newpass, user.Salt)

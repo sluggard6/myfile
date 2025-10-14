@@ -6,7 +6,9 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/fsnotify/fsnotify"
 	log "github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 	yaml "gopkg.in/yaml.v3"
 )
 
@@ -20,6 +22,7 @@ type Server struct {
 	Host        string
 	Port        int
 	ContextPath string `yaml:"contextPath"`
+	AuthType    string `yaml:"authType"`
 }
 
 type Store struct {
@@ -45,7 +48,7 @@ func (e *ConfigException) Error() string {
 }
 
 const (
-	DefaultConfigPath string   = "conf/application.yml"
+	DefaultConfigPath string   = "conf/application.yaml"
 	Mysql             dbType   = "mysql"
 	Sqlite            dbType   = "sqlite"
 	Yml               fileType = "yml"
@@ -57,6 +60,7 @@ var config Config = Config{
 		Host:        "0.0.0.0",
 		Port:        5678,
 		ContextPath: "",
+		AuthType:    "token",
 	},
 	Database: Database{
 		Type:     Sqlite,
@@ -73,20 +77,21 @@ func GetConfig() *Config {
 	return &config
 }
 
-func New(config string) Config {
+func New(config string) *Config {
 	// return Config{"127.0.0.1", 5678}
 	return LoadConfig(DefaultConfigPath)
 }
 
-func LoadConfig(path string) Config {
+func LoadConfig(path string) *Config {
 	ext := filepath.Ext(path)
-	if ext == ".json" {
+	switch ext {
+	case ".json":
 		return loadJsonConfig(path)
-	} else if ext == ".yml" || ext == ".yaml" {
+	case ".yml", ".yaml":
 		return loadYmlConfig(path)
-	} else {
+	default:
 		log.Error("unknow file " + path)
-		return config
+		return &config
 	}
 }
 
@@ -113,7 +118,7 @@ func LoadConfig2(path string) Config {
 	return config
 }
 
-func loadJsonConfig(path string) Config {
+func loadJsonConfig(path string) *Config {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		fmt.Printf("unable to decode into struct, %v", err)
@@ -124,10 +129,10 @@ func loadJsonConfig(path string) Config {
 			panic(err)
 		}
 	}
-	return config
+	return &config
 }
 
-func loadYmlConfig(path string) Config {
+func loadYmlConfig(path string) *Config {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		log.Printf("读取配置文件失败 #%v", err)
@@ -137,5 +142,26 @@ func loadYmlConfig(path string) Config {
 		log.Fatalf("解析失败: %v", err)
 	}
 	log.Debug(config)
-	return config
+	return &config
+}
+
+func InitViperConfig() *Config {
+	v := viper.New()
+	v.SetConfigName("application")
+	v.AddConfigPath("./conf")
+	v.SetConfigType("yaml")
+	if err := v.ReadInConfig(); err != nil {
+		log.Fatalf("Fatal error config file: %s \n", err)
+	}
+	v.WatchConfig()
+	v.OnConfigChange(func(e fsnotify.Event) {
+		fmt.Println("config file changed:", e.Name)
+		if err := v.Unmarshal(&config); err != nil {
+			fmt.Println(err)
+		}
+	})
+	if err := v.Unmarshal(&config); err != nil {
+		panic(err)
+	}
+	return &config
 }

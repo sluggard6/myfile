@@ -6,3 +6,15 @@ import "github.com/sluggard/myfile/model"
 func GetByID(modelEntity interface{}, id uint) (interface{}, error) {
 	return model.GetById(modelEntity, id)
 }
+
+type ServiceGroup struct {
+	UserService
+	LibraryService
+	FolderService
+	FileService
+	TokenService
+}
+
+var ServiceGroupApp = ServiceGroup{
+	TokenService: *tokenService,
+}

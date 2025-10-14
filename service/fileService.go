@@ -19,7 +19,7 @@ type myFileSer struct {
 
 var myFileService *myFileSer
 
-//NewFileService 根据存储类型创建文件服务
+// NewFileService 根据存储类型创建文件服务
 func NewFileService(store store.Store) FileService {
 	if myFileService == nil {
 		myFileService = &myFileSer{store}

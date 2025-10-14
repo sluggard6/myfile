@@ -10,12 +10,12 @@ import (
 )
 
 type LibraryController struct {
-	libraryService service.LibraryService
+	// libraryService service.LibraryService
 }
 
-func NewLibraryController() *LibraryController {
-	return &LibraryController{service.NewLibraryService()}
-}
+// func NewLibraryController() *LibraryController {
+// 	return &LibraryController{service.NewLibraryService()}
+// }
 
 func (c *LibraryController) Get(ctx iris.Context) *HttpResult {
 	user := CurrentUser(ctx)
@@ -28,13 +28,13 @@ func (c *LibraryController) Get(ctx iris.Context) *HttpResult {
 	// user := sessions.Get(ctx).Get("user").(*model.User)
 	lTpye := ctx.URLParamDefault("type", "mine")
 	if lTpye == "mine" {
-		if librarys, err := c.libraryService.GetLibraryMine(user.ID); err != nil {
+		if librarys, err := libraryService.GetLibraryMine(user.ID); err != nil {
 			return FailedMessage(err.Error())
 		} else {
 			return Success(librarys)
 		}
 	} else if lTpye == "share" {
-		if librarys, err := c.libraryService.GetLibraryShare(user.ID); err != nil {
+		if librarys, err := libraryService.GetLibraryShare(user.ID); err != nil {
 			return FailedMessage(err.Error())
 		} else {
 			return Success(librarys)
@@ -51,7 +51,7 @@ func (c *LibraryController) Put(ctx iris.Context) *HttpResult {
 	if user.HasLibraryName(name) {
 		return FailedMessage(fmt.Sprintf("资料库'%s'已存在", name))
 	}
-	library, err := c.libraryService.CreateLibrary(user.ID, name)
+	library, err := libraryService.CreateLibrary(user.ID, name)
 	if err != nil {
 		return FailedMessage(err.Error())
 	}
@@ -81,7 +81,7 @@ func (c *LibraryController) Post(ctx iris.Context) *HttpResult {
 		return FailedMessage(err.Error())
 	}
 	library.Name = editLibraryForm.Name
-	err = c.libraryService.UpdateLibrary(library)
+	err = libraryService.UpdateLibrary(library)
 	if err != nil {
 		return FailedMessage(err.Error())
 	}
@@ -112,7 +112,7 @@ func (c *LibraryController) DeleteBy(id uint, ctx iris.Context) *HttpResult {
 	if b, _, _ := user.HasLibrary(id); !b {
 		return FailedForbidden(ctx)
 	}
-	err := c.libraryService.DeleteLibrary(id)
+	err := libraryService.DeleteLibrary(id)
 	if err != nil {
 		return FailedMessage(err.Error())
 	}
@@ -147,7 +147,7 @@ func (c *LibraryController) PutShare(ctx iris.Context) *HttpResult {
 		if user.ID == uint(userId) {
 			continue
 		}
-		c.libraryService.ShareLibraryOne(shareLibraryForm.LibraryId, userId, shareLibraryForm.Role)
+		libraryService.ShareLibraryOne(shareLibraryForm.LibraryId, userId, shareLibraryForm.Role)
 	}
 	return Success(ret)
 }
@@ -165,12 +165,12 @@ func (c *LibraryController) DeleteShare(ctx iris.Context) *HttpResult {
 		return FailedCodeMessage(PARAM_ERROR, err.Error())
 	}
 	if user.ID == deleteShareForm.OwnerId {
-		c.libraryService.RemoveShareLibrary(deleteShareForm.ShareLibraryId, deleteShareForm.OwnerId)
+		libraryService.RemoveShareLibrary(deleteShareForm.ShareLibraryId, deleteShareForm.OwnerId)
 	} else {
 		if shareLibrary, err = model.GetById(&model.ShareLibrary{}, deleteShareForm.ShareLibraryId); err == nil {
 			print(shareLibrary)
 			if has, _, _ := user.HasLibrary(shareLibrary.(*model.ShareLibrary).LibraryID); has {
-				c.libraryService.RemoveShareLibrary(deleteShareForm.ShareLibraryId, deleteShareForm.OwnerId)
+				libraryService.RemoveShareLibrary(deleteShareForm.ShareLibraryId, deleteShareForm.OwnerId)
 			}
 		}
 	}

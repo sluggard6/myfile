@@ -10,10 +10,10 @@ import (
 	"gorm.io/gorm"
 )
 
-//JsonTime time.Time的变体，为满足自定义序列化
+// JsonTime time.Time的变体，为满足自定义序列化
 type JsonTime time.Time
 
-//MarshalJSON 实现它的json序列化方法
+// MarshalJSON 实现它的json序列化方法
 func (jtime JsonTime) MarshalJSON() ([]byte, error) {
 	var stamp = fmt.Sprintf("\"%s\"", time.Time(jtime).Format("2006-01-02 15:04:05"))
 	return []byte(stamp), nil
@@ -23,7 +23,7 @@ func (jtime JsonTime) Value() (driver.Value, error) {
 	return time.Time(jtime), nil
 }
 
-//Scan 反射时转换为指针类型
+// Scan 反射时转换为指针类型
 func (jtime *JsonTime) Scan(src interface{}) error {
 	*jtime = JsonTime(src.(time.Time))
 	return nil
@@ -36,7 +36,7 @@ func (jtime *JsonTime) UnmarshalJSON(b []byte) error {
 	return err
 }
 
-//Model 替换gorm.Model
+// Model 替换gorm.Model
 type Model struct {
 	ID        uint           `gorm:"primarykey" json:"id"`
 	CreatedAt JsonTime       `json:"createdAt"`

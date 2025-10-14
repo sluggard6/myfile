@@ -9,7 +9,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/sluggard/myfile/docs"
 	"github.com/sluggard/myfile/service"
+
 	//_ "github.com/sluggard/myfile/statik" // TODO: Replace with the absolute import path
 
 	"github.com/iris-contrib/swagger/v12"
@@ -27,7 +29,7 @@ import (
 
 // HttpServer
 type HttpServer struct {
-	Config config.Config
+	Config *config.Config
 	App    *iris.Application
 	Store  store.Store
 	Status bool
@@ -44,19 +46,22 @@ var (
 	}
 )
 
-func initSwagger(app *iris.Application) {
+func initSwagger(app *iris.Application, contextPath string) {
 	// url := swagger.URL("http://localhost:5678/swagger/doc.json") //The url pointing to API definition
 	// app.Get("/swagger/{any:path}", swagger.WrapHandler(swaggerFiles.Handler, url))
+
+	docs.SwaggerInfo.BasePath = contextPath
 	config := &swagger.Config{
-		URL: "http://localhost:5678/swagger/doc.json", //The url pointing to API definition
+		// URL: "http://localhost:5678/swagger/doc.json", //The url pointing to API definition
+		URL: fmt.Sprintf("http://localhost:5678%s/swagger/doc.json", contextPath),
 	}
 	// use swagger middleware to
-	app.Get("/swagger/{any:path}", swagger.CustomWrapHandler(config, swaggerFiles.Handler))
+	app.Get(contextPath+"/swagger/{any:path}", swagger.CustomWrapHandler(config, swaggerFiles.Handler))
 }
 
-func NewServer(config config.Config) *HttpServer {
+func NewServer(config *config.Config) *HttpServer {
 	app := iris.New()
-	initSwagger(app)
+	initSwagger(app, config.Server.ContextPath)
 
 	httpServer := &HttpServer{
 		Config: config,
@@ -126,7 +131,9 @@ func TokenRequired(ctx iris.Context) {
 		}
 	}
 	token := ctx.GetHeader("Authorization")
-	if user, err := service.NewTokenService().CheckToken(token); err != nil {
+	log.Debugln(token)
+	if user, err := service.ServiceGroupApp.TokenService.CheckToken(token); err != nil {
+		log.Infoln(err)
 		ctx.StatusCode(iris.StatusUnauthorized)
 		ctx.JSON(iris.Map{
 			"code":    401,
@@ -169,8 +176,12 @@ func (s *HttpServer) RouteInit() {
 	app.Options("/*", controller.Cors)
 	// app.Party("/*", controller.Cors).AllowMethods(iris.MethodOptions)
 	app.UseGlobal(controller.Cors)
-	app.Use(TokenRequired)
-	// app.Use(AuthRequired, sess.Handler())
+	if s.Config.Server.AuthType == "session" {
+		app.Use(AuthRequired, sess.Handler())
+	} else {
+		app.Use(TokenRequired)
+	}
+
 	// app.Use(sess.Handler())
 	statikFS, err := fs.New()
 	if err == nil {
@@ -179,9 +190,9 @@ func (s *HttpServer) RouteInit() {
 		fmt.Printf("err: %v\n", err)
 	}
 	mvc.New(app.Party(s.Config.Server.ContextPath + "/test")).Handle(new(controller.TestController))
-	mvc.New(app.Party(s.Config.Server.ContextPath + "/user")).Handle(controller.NewUserController())
-	mvc.New(app.Party(s.Config.Server.ContextPath + "/library")).Handle(controller.NewLibraryController())
-	mvc.New(app.Party(s.Config.Server.ContextPath + "/folder")).Handle(controller.NewFolderController())
+	mvc.New(app.Party(s.Config.Server.ContextPath + "/user")).Handle(&controller.ControllerGroupApp.UserController)
+	mvc.New(app.Party(s.Config.Server.ContextPath + "/library")).Handle(&controller.ControllerGroupApp.LibraryController)
+	mvc.New(app.Party(s.Config.Server.ContextPath + "/folder")).Handle(&controller.ControllerGroupApp.FolderController)
 	mvc.New(app.Party(s.Config.Server.ContextPath + "/file")).Handle(controller.NewFileController(s.Store))
 	for _, route := range app.APIBuilder.GetRoutes() {
 		log.Info(route)
