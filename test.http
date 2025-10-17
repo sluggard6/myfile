@@ -1,9 +1,10 @@
 # @host = http://81.68.125.115
 # @host = http://81.68.125.115:5678
-@host = http://localhost:5678
+@host = https://www.myfile.live
+# @host = http://localhost:5678
 
 @cpath = /myfile
-@token = a263f9948ea147609e44ab2410fba4c8
+@token = 95a2362846ee44699af0a0e8a3d67b74
 
 User-Agent: rest-client
 Accept-Language: en-GB,en-US;q=0.8,en;q=0.6,zh-CN;q=0.4
@@ -45,9 +46,11 @@ Content-Type: application/octet-stream
 
 ###checkLibraryName false
 GET {{host}}{{cpath}}/library/check?name=Default Library
+Authorization: {{token}}
 
 ###checkLibraryName true
 GET {{host}}{{cpath}}/library/check?name=test
+Authorization: {{token}}
 
 ###shareLibrary
 PUT {{host}}{{cpath}}/library/share

@@ -27,19 +27,20 @@ func (c *LibraryController) Get(ctx iris.Context) *HttpResult {
 	// model.User(user)
 	// user := sessions.Get(ctx).Get("user").(*model.User)
 	lTpye := ctx.URLParamDefault("type", "mine")
-	if lTpye == "mine" {
+	switch lTpye {
+	case "mine":
 		if librarys, err := libraryService.GetLibraryMine(user.ID); err != nil {
 			return FailedMessage(err.Error())
 		} else {
 			return Success(librarys)
 		}
-	} else if lTpye == "share" {
+	case "share":
 		if librarys, err := libraryService.GetLibraryShare(user.ID); err != nil {
 			return FailedMessage(err.Error())
 		} else {
 			return Success(librarys)
 		}
-	} else {
+	default:
 		return FailedCode(PARAM_ERROR)
 	}
 }

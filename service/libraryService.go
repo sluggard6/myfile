@@ -8,29 +8,29 @@ import (
 )
 
 // LibraryService 资料库服务
-type LibraryService interface {
-	CreateLibrary(userID uint, name string) (*model.Library, error)
-	GetLibraryMine(userID uint) ([]model.Library, error)
-	GetLibraryShare(userID uint) ([]model.ShareLibrary, error)
-	UpdateLibrary(library *model.Library) error
-	DeleteLibrary(id uint) error
-	ShareLibraryOne(libraryID uint, userID uint, role model.LibraryRole) error
-	ShareLibrarys(libraryID uint, userIds []uint, role model.LibraryRole) error
-	RemoveShareLibrary(shareLibraryID uint, userID uint) error
-	// ShareLibrary(shareLibrary *model.ShareLibrary) error
-}
+// type LibraryService interface {
+// 	CreateLibrary(userID uint, name string) (*model.Library, error)
+// 	GetLibraryMine(userID uint) ([]model.Library, error)
+// 	GetLibraryShare(userID uint) ([]model.ShareLibrary, error)
+// 	UpdateLibrary(library *model.Library) error
+// 	DeleteLibrary(id uint) error
+// 	ShareLibraryOne(libraryID uint, userID uint, role model.LibraryRole) error
+// 	ShareLibrarys(libraryID uint, userIds []uint, role model.LibraryRole) error
+// 	RemoveShareLibrary(shareLibraryID uint, userID uint) error
+// ShareLibrary(shareLibrary *model.ShareLibrary) error
+// }
 
-var libraryService = &librarySer{}
+var libraryService = &LibraryService{}
 
 // NewLibraryService 创建LibraryService实现
-func NewLibraryService() LibraryService {
-	return libraryService
+// func NewLibraryService() LibraryService {
+// 	return libraryService
+// }
+
+type LibraryService struct {
 }
 
-type librarySer struct {
-}
-
-func (s *librarySer) CreateLibrary(userID uint, name string) (*model.Library, error) {
+func (s *LibraryService) CreateLibrary(userID uint, name string) (*model.Library, error) {
 	if err := checkLibraryName(name); err != nil {
 		return nil, err
 	}
@@ -52,17 +52,17 @@ func (s *librarySer) CreateLibrary(userID uint, name string) (*model.Library, er
 	library.RootFolder = *folder
 	return library, nil
 }
-func (s *librarySer) GetLibraryMine(userID uint) ([]model.Library, error) {
+func (s *LibraryService) GetLibraryMine(userID uint) ([]model.Library, error) {
 	library := &model.Library{}
 	return library.GetLibraryMine(userID)
 }
 
-func (s *librarySer) GetLibraryShare(userID uint) ([]model.ShareLibrary, error) {
+func (s *LibraryService) GetLibraryShare(userID uint) ([]model.ShareLibrary, error) {
 	share := &model.ShareLibrary{}
 	return share.GetLibraryShare(userID)
 }
 
-func (s *librarySer) ShareLibrarys(libraryID uint, userIds []uint, role model.LibraryRole) error {
+func (s *LibraryService) ShareLibrarys(libraryID uint, userIds []uint, role model.LibraryRole) error {
 	if len(userIds) == 0 {
 		return errors.New("userIds is nil")
 	}
@@ -76,7 +76,7 @@ func (s *librarySer) ShareLibrarys(libraryID uint, userIds []uint, role model.Li
 	return err
 }
 
-func (s *librarySer) ShareLibraryOne(libraryID uint, userID uint, role model.LibraryRole) error {
+func (s *LibraryService) ShareLibraryOne(libraryID uint, userID uint, role model.LibraryRole) error {
 	if user, _ := userService.GetById(userID); user.ID <= 0 {
 		return fmt.Errorf("can't find user %d", libraryID)
 	}
@@ -101,18 +101,18 @@ func (s *librarySer) ShareLibraryOne(libraryID uint, userID uint, role model.Lib
 	return err
 }
 
-func (s *librarySer) DeleteLibrary(id uint) error {
+func (s *LibraryService) DeleteLibrary(id uint) error {
 	library := &model.Library{Model: model.Model{ID: id}}
 	folderService.DeleteByLibrary(id)
 	model.Delete(library)
 	return nil
 }
 
-func (s *librarySer) UpdateLibrary(library *model.Library) error {
+func (s *LibraryService) UpdateLibrary(library *model.Library) error {
 	return model.DB().Save(library).Error
 }
 
-func (s *librarySer) RemoveShareLibrary(shareLibraryID uint, userID uint) error {
+func (s *LibraryService) RemoveShareLibrary(shareLibraryID uint, userID uint) error {
 	shareLibrary := &model.ShareLibrary{ModelHard: model.ModelHard{ID: shareLibraryID}}
 	return model.DB().Where("user_id=?", userID).Delete(shareLibrary).Error
 }

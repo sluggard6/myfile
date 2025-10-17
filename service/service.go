@@ -16,5 +16,6 @@ type ServiceGroup struct {
 }
 
 var ServiceGroupApp = ServiceGroup{
-	TokenService: *tokenService,
+	TokenService:   *tokenService,
+	LibraryService: *libraryService,
 }
