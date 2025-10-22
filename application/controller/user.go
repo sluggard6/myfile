@@ -39,11 +39,11 @@ type LoginInfo struct {
 // @Tags User
 // @Accept  application/json
 // @Produce  application/json
-// @Param loginForm body LoginForm true "用户名密码"
-// @Success 200 {object} LoginInfo "用户信息"
+// @Param loginForm formData LoginForm true "用户名密码"
+// @Success 200 object HttpResult "用户信息"
 // @Failure 400 {object} HttpResult "参数错误"
 // @Failure 401 {object} HttpResult "用户名或密码错误"
-// @Failure500 {object} HttpResult "服务器错误"
+// @Failure 500 {object} HttpResult "服务器错误"
 // @Router /user/login [post]
 func (c *UserController) PostLogin(ctx iris.Context) *HttpResult {
 	loginForm := &LoginForm{}
@@ -90,7 +90,7 @@ func (c *UserController) GetBy(id uint) *HttpResult {
 // @Accept       application/json
 // @Produce      application/json
 // @Param        user  body      model.User  true  "用户信息"
-// @Success      200  {object}  model.User@
+// @Success      200  object  model.User@
 // @Router       /user/register [post]
 func (c *UserController) PostRegister(ctx iris.Context) *HttpResult {
 	user := &model.User{}
@@ -132,8 +132,8 @@ func (c *UserController) GetLike(ctx iris.Context) *HttpResult {
 // @Accept  application/json
 // @Produce  application/json
 // @Param   body body    ResetPassForm  true  "用户信息"
-// @Success 200 {object}
-// @Failure
+// @Success 200  object  HttpResult
+// @Router /user/resetpass [post]
 func (c *UserController) PostResetpass(ctx iris.Context) *HttpResult {
 	user := CurrentUser(ctx)
 	// user := sessions.Get(ctx).Get("user").(*model.User)

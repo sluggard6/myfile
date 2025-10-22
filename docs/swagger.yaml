@@ -1,3 +1,4 @@
+basePath: /
 definitions:
   controller.HttpResult:
     properties:
@@ -6,23 +7,6 @@ definitions:
       data: {}
       message:
         type: string
-    type: object
-  controller.LoginForm:
-    properties:
-      password:
-        type: string
-      username:
-        type: string
-    required:
-    - password
-    - username
-    type: object
-  controller.LoginInfo:
-    properties:
-      token:
-        type: string
-      user:
-        $ref: '#/definitions/model.User'
     type: object
   controller.MessageCode:
     enum:
@@ -36,6 +20,17 @@ definitions:
     - FAILED
     - PARAM_ERROR
     - LOGIN_FAILED
+  controller.ResetPassForm:
+    properties:
+      newpass:
+        type: string
+      oldpass:
+        type: string
+      userid:
+        type: integer
+    required:
+    - newpass
+    type: object
   gorm.DeletedAt:
     properties:
       time:
@@ -131,8 +126,22 @@ definitions:
     - password
     - username
     type: object
+externalDocs:
+  description: OpenAPI
+  url: https://swagger.io/resources/open-api/
+host: localhost:5678
 info:
-  contact: {}
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a sample server celler server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Myfile Swagger API
+  version: "1.0"
 paths:
   /user/login:
     post:
@@ -140,19 +149,21 @@ paths:
       - application/json
       description: 用户登录
       parameters:
-      - description: 用户名密码
-        in: body
-        name: loginForm
+      - in: formData
+        name: password
         required: true
-        schema:
-          $ref: '#/definitions/controller.LoginForm'
+        type: string
+      - in: formData
+        name: username
+        required: true
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: 用户信息
           schema:
-            $ref: '#/definitions/controller.LoginInfo'
+            $ref: '#/definitions/controller.HttpResult'
         "400":
           description: 参数错误
           schema:
@@ -161,7 +172,60 @@ paths:
           description: 用户名或密码错误
           schema:
             $ref: '#/definitions/controller.HttpResult'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/controller.HttpResult'
       summary: 用户登录
       tags:
-      - 用户
+      - User
+  /user/register:
+    post:
+      consumes:
+      - application/json
+      description: 用户注册
+      parameters:
+      - description: 用户信息
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.User'
+      summary: 用户注册
+      tags:
+      - User
+  /user/resetpass:
+    post:
+      consumes:
+      - application/json
+      description: 重置密码
+      parameters:
+      - description: 用户信息
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/controller.ResetPassForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.HttpResult'
+      summary: 重置密码
+      tags:
+      - User
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
