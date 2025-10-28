@@ -1,0 +1,10 @@
+server:
+  host: 0.0.0.0
+  port: 5678
+  contextPath: /myfile
+  authType: token
+database:
+  type: mysql
+  url: tcp(sh-cynosdbmysql-grp-ep3srdzu.sql.tencentcdb.com:26162)/myfile?charset=utf8mb4&parseTime=True&loc=Local
+  username: admin
+  password: admin@2021

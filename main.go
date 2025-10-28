@@ -64,7 +64,8 @@ func main() {
 	}
 
 	if *version {
-		fmt.Println(fmt.Sprintf("版本号：%s", Version))
+		fmt.Printf("版本号：%s\n", Version)
+		// fmt.Println(fmt.Sprintf("版本号：%s", Version))
 		return
 	}
 

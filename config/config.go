@@ -21,8 +21,8 @@ type Config struct {
 type Server struct {
 	Host        string
 	Port        int
-	ContextPath string `yaml:"contextPath"`
-	AuthType    string `yaml:"authType"`
+	ContextPath string `yaml:"contextPath" json:"contextPath"`
+	AuthType    string `yaml:"authType" json:"authType"`
 }
 
 type Store struct {

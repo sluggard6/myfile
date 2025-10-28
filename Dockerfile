@@ -19,6 +19,6 @@ FROM alpine:latest
 WORKDIR /myfile
 
 COPY --from=builder /app/myfile .
-COPY conf/*.yaml ./conf/
+COPY .conf/*.yaml ./conf/
 
 ENTRYPOINT [ "./myfile", "start"]

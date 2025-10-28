@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/iris-contrib/middleware/cors"
 	"github.com/sluggard/myfile/docs"
 	"github.com/sluggard/myfile/service"
 
@@ -173,9 +174,10 @@ func AuthRequired(ctx iris.Context) {
 func (s *HttpServer) RouteInit() {
 
 	app := s.App
-	app.Options("/*", controller.Cors)
+	// app.Options("/*", controller.Cors)
 	// app.Party("/*", controller.Cors).AllowMethods(iris.MethodOptions)
-	app.UseGlobal(controller.Cors)
+	// app.UseGlobal(controller.Cors)
+	s.cros() //使用cors中间件
 	if s.Config.Server.AuthType == "session" {
 		app.Use(AuthRequired, sess.Handler())
 	} else {
@@ -197,6 +199,15 @@ func (s *HttpServer) RouteInit() {
 	for _, route := range app.APIBuilder.GetRoutes() {
 		log.Info(route)
 	}
+}
+
+func (s *HttpServer) cros() {
+	crs := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowCredentials: true,
+	})
+	crs = cors.AllowAll()
+	s.App.UseRouter(crs)
 }
 
 // func (s *HttpServer) addWebDAV(path string, libraryId int) {
