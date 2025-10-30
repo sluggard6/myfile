@@ -15,8 +15,9 @@ func (c *TestController) Get() string {
 	return "path not found."
 }
 
-func (c *TestController) GetPing(ctx iris.Context) string {
-	return "pong"
+func (c *TestController) GetPing(ctx iris.Context) {
+	ctx.WriteString("pong")
+	// return "pong"
 }
 
 func (m *TestController) BeforeActivation(b mvc.BeforeActivation) {

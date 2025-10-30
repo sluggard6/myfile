@@ -87,15 +87,21 @@ func CurrentUser(ctx iris.Context) (user *model.User) {
 }
 
 type ControllerGroup struct {
+	TestController
 	UserController
 	FolderController
 	LibraryController
 	FileController
 }
 
+func (cg *ControllerGroup) InitTest(party iris.Party) {
+	party.Handle("GET", "/ping", testRouter.GetPing)
+}
+
 var ControllerGroupApp = new(ControllerGroup)
 
 var (
+	testRouter     = ControllerGroupApp.TestController
 	userService    = service.ServiceGroupApp.UserService
 	tokenService   = service.ServiceGroupApp.TokenService
 	folderService  = service.ServiceGroupApp.FolderService

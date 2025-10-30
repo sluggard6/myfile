@@ -177,7 +177,7 @@ func (s *HttpServer) RouteInit() {
 	// app.Options("/*", controller.Cors)
 	// app.Party("/*", controller.Cors).AllowMethods(iris.MethodOptions)
 	// app.UseGlobal(controller.Cors)
-	s.cros() //使用cors中间件
+	s.cors() //使用cors中间件
 	if s.Config.Server.AuthType == "session" {
 		app.Use(AuthRequired, sess.Handler())
 	} else {
@@ -191,7 +191,9 @@ func (s *HttpServer) RouteInit() {
 	} else {
 		fmt.Printf("err: %v\n", err)
 	}
-	mvc.New(app.Party(s.Config.Server.ContextPath + "/test")).Handle(new(controller.TestController))
+	controller.ControllerGroupApp.InitTest(app.Party(s.Config.Server.ContextPath + "/test"))
+	// app.Party(s.Config.Server.ContextPath + "/test")
+	// mvc.New(app.Party(s.Config.Server.ContextPath + "/test")).Handle(new(controller.TestController))
 	mvc.New(app.Party(s.Config.Server.ContextPath + "/user")).Handle(&controller.ControllerGroupApp.UserController)
 	mvc.New(app.Party(s.Config.Server.ContextPath + "/library")).Handle(&controller.ControllerGroupApp.LibraryController)
 	mvc.New(app.Party(s.Config.Server.ContextPath + "/folder")).Handle(&controller.ControllerGroupApp.FolderController)
@@ -201,12 +203,18 @@ func (s *HttpServer) RouteInit() {
 	}
 }
 
-func (s *HttpServer) cros() {
+func (s *HttpServer) cors() {
+	// crs := cors.New(cors.Options{
+	// 	AllowedOrigins:   []string{"*"},
+	// 	AllowCredentials: true,
+	// })
+	// crs = cors.AllowAll()
 	crs := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"HEAD", "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"*"},
 		AllowCredentials: true,
 	})
-	crs = cors.AllowAll()
 	s.App.UseRouter(crs)
 }
 
