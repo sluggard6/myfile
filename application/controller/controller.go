@@ -96,6 +96,7 @@ type ControllerGroup struct {
 
 func (cg *ControllerGroup) InitTest(party iris.Party) {
 	party.Handle("GET", "/ping", testRouter.GetPing)
+	party.Handle("GET", "/hello", testRouter.GetHello)
 }
 
 var ControllerGroupApp = new(ControllerGroup)

@@ -31,6 +31,7 @@ func (m *TestController) BeforeActivation(b mvc.BeforeActivation) {
 	b.Handle("OPTIONS", "/{any:path}", "", Cors)
 }
 
-func (c *TestController) GetHello(ctx iris.Context) *HttpResult {
-	return Success(fmt.Sprintf("Hello %s!", ctx.URLParam("name")))
+func (c *TestController) GetHello(ctx iris.Context) {
+	ctx.JSON(Success(fmt.Sprintf("Hello %s!", ctx.URLParam("name"))))
+	// return
 }

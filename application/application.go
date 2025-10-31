@@ -41,6 +41,7 @@ var (
 	sess          = sessions.New(sessions.Config{Cookie: gSessionId})
 	ignoreAuthUrl = []string{
 		"/test/ping",
+		"/test/hello",
 		"/user/login",
 		"/user/register",
 		"/app",
